@@ -1,5 +1,4 @@
-import React from 'react';
-import { Router } from 'react-router-dom';
+import Router from './shared/Router';
 
 const App = () => {
   return (
