@@ -1,21 +1,29 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Layout from '../component/Layout';
-import Home from '../page/Home';
-import Detail from '../page/Detail';
-import EditProfile from '../page/EditProfile';
-import List from '../page/List';
-const Router = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/detail" element={<Detail />} />
-        <Route path="/editProfile" element={<EditProfile />} />
-        <Route path="/list" element={<List />} />
-      </Routes>
-    </BrowserRouter>
-  );
-};
+import { createBrowserRouter } from 'react-router-dom';
+import HomePage from '../page/homePage/HomePage';
+import Detail from '../page/detailPage/Detail';
+import List from '../page/listPage/List';
+import DefaultLayout from '../layouts/DefaultLayout';
+import MyPage from '../page/myPage/MyPage';
+
+const Router = createBrowserRouter([
+  {
+    element: <DefaultLayout />,
+    children: [
+      { path: '/', element: <HomePage /> },
+      {
+        path: '/detail',
+        element: <Detail />,
+      },
+      {
+        path: '/my-page',
+        element: <MyPage />,
+      },
+      {
+        path: '/list',
+        element: <List />,
+      },
+    ],
+  },
+]);
 
 export default Router;
