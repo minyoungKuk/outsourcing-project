@@ -1,14 +1,19 @@
 import supabase from './../config/supabase';
 
-export const register = async ({ email, password, nickname }) => {
+export const register = async ({
+  email,
+  password,
+  nickname,
+  profile_image,
+}) => {
   try {
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
-      nickname: nickname,
       options: {
         data: {
           displayName: nickname,
+          profile_image_url: profile_image,
         },
       },
     });
@@ -25,7 +30,13 @@ export const register = async ({ email, password, nickname }) => {
     const { data: insertData, error: dbError } = await supabase
       .from('user')
       .insert([
-        { id: user.id, email: email, nickname: nickname, password: password },
+        {
+          id: user.id,
+          email: email,
+          nickname: nickname,
+          password: password,
+          profile_image_url: profile_image,
+        },
       ]);
 
     if (dbError) {
@@ -38,6 +49,8 @@ export const register = async ({ email, password, nickname }) => {
     alert(`Error: ${error.message || 'Unknown error occurred'}`);
   }
 };
+
+///
 
 export const login = async ({ email, password }) => {
   try {
@@ -57,3 +70,5 @@ export const login = async ({ email, password }) => {
     throw error;
   }
 };
+
+//
