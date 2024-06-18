@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-import { register } from './../../api/supabaseAuth';
+import { register } from '../../api/supabaseAuth';
 
 const SignUpPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
@@ -13,7 +11,7 @@ const SignUpPage = () => {
 
   const onAddUser = async () => {
     if (email.length < 4 || email.length > 30) {
-      alert('아이디는 4글자 이상이어야 합니다');
+      alert('이메일은 4글자 이상이어야 합니다');
       return;
     } else if (password.length < 4 || password.length > 15) {
       alert('비밀번호는 6~15글자여야 합니다.');
@@ -31,7 +29,7 @@ const SignUpPage = () => {
     console.log('회원가입 api 응답 :', response);
     if (response) {
       confirm('회원가입이 완료 되었습니다!');
-      navigate('/');
+      // navigate('/');
     }
   };
 
@@ -41,7 +39,10 @@ const SignUpPage = () => {
   };
 
   return (
-    <StSignInForm onSubmit={onSubmit}>
+    <form
+      onSubmit={onSubmit}
+      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+    >
       <input
         type="email"
         placeholder="로그인아이디(4~30글자 이내)"
@@ -49,6 +50,7 @@ const SignUpPage = () => {
         maxLength={30}
         required
         onChange={(e) => setEmail(e.target.value)}
+        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="password"
@@ -57,6 +59,7 @@ const SignUpPage = () => {
         maxLength={15}
         required
         onChange={(e) => setPassWord(e.target.value)}
+        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <input
         type="text"
@@ -65,10 +68,18 @@ const SignUpPage = () => {
         maxLength={10}
         required
         onChange={(e) => setNickName(e.target.value)}
+        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <StButton>회원가입</StButton>
-      <StLink to="/">로그인</StLink>
-    </StSignInForm>
+      <button
+        type="submit"
+        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
+      >
+        회원가입
+      </button>
+      <a href="/" className="text-blue-500 hover:underline">
+        로그인
+      </a>
+    </form>
   );
 };
 
