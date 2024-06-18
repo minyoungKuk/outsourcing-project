@@ -1,13 +1,12 @@
-import SignInPage from './page/login/SignInPage';
-import SignUpPage from './page/login/SignUpPage';
+import { RouterProvider } from 'react-router-dom';
+import Router from './shared/Router';
 
-function App() {
+const App = () => {
   return (
     <div>
-      <SignUpPage />
-      <SignInPage />
+      <RouterProvider router={Router} />
     </div>
   );
-}
+};
 
 export default App;
