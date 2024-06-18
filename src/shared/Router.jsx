@@ -4,6 +4,7 @@ import Detail from '../page/detailPage/Detail';
 import List from '../page/listPage/List';
 import DefaultLayout from '../layouts/DefaultLayout';
 import MyPage from '../page/myPage/MyPage';
+import WritePage from '../page/writePage';
 
 const Router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const Router = createBrowserRouter([
       {
         path: '/list',
         element: <List />,
+      },
+      {
+        path: '/write-page',
+        element: <WritePage />,
       },
     ],
   },
