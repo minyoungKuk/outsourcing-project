@@ -3,12 +3,21 @@
 
 import { useState } from 'react';
 import { login } from '../../api/supabaseAuth';
+import { useModal } from '../../context/modal.context';
+import SignUpPage from './SignUpPage';
 
 const SignInPage = () => {
   // const navigate = useNavigate();
   // const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
+  const { open } = useModal();
+  const openSignUpModal = () => {
+    open({
+      type: 'signUp',
+      content: <SignUpPage />,
+    });
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -49,6 +58,7 @@ const SignInPage = () => {
       />
       <button onClick={onSubmit}>로그인</button>
       {/* <button onClick={() => navigate('/signUp')}>회원가입</button> */}
+      <button onClick={openSignUpModal}>회원가입</button>
     </form>
   );
 };
