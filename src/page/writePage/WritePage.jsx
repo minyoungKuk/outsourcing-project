@@ -1,6 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 // import supabase from '../../config/supabase';
+
+const TAG_LIST = [
+  { id: 0, data: '#반려동물' },
+  { id: 1, data: '#한적한' },
+  { id: 2, data: '#놀이터' },
+  { id: 3, data: '#운동기구' },
+  { id: 4, data: '#야경명소' },
+  { id: 5, data: '#낮에좋은' },
+  { id: 6, data: '#자전거' },
+  { id: 7, data: '#소풍' },
+];
 
 function WritePage() {
   //   const FetchData = () => {
@@ -15,33 +26,30 @@ function WritePage() {
   //       };
   //     }, []);
   //   };
+
+  // 유즈스테이트로 선택된 태그들의 배열을 만들고 해당 배열의 길이가 2를 넘지 않게 하면 됨
+  // 온체인지로 유즈스테이트로 만든 셋배열에 담아주는 함수를 온체인지에 전달
+  // 이 함수를 하려면 기존 배열의 길이가 2를 넘지 않는지 확인하고 2를 넘으면 체크박스 못넘게 알림창같은거
+  // 2를 넘지 않으면 set배열에 담아주면 됨
   const navigate = useNavigate();
-  const [search, setSearch] = useState('');
-  console.log(search);
+
+  // 체크된 태그를 넣을 빈 배열
+  const [checkedList, setCheckedList] = useState([]);
+
+  // 태그 온체인지 이벤트 감지, 값 받아오기
+  const onCheckedTag = (checked, item) => {
+    if (checked && checkedList.length < 2) {
+      setCheckedList([...checkedList, item]);
+    } else if (!checked) {
+      setCheckedList(checkedList.filter((element) => element !== item));
+    }
+  };
+  console.log(checkedList);
+
   return (
     <div>
       <h1>산책 리뷰 작성</h1>
       <section>
-        <select name="도" id="do">
-          <option value="경기도">경기도</option>
-          <option value="서울">서울</option>
-          <option value="강원도">강원도</option>
-          <option value="충청도">충청도</option>
-          <option value="전라도">전라도</option>
-          <option value="경상도">경상도</option>
-          <option value="제주도">제주도</option>
-        </select>
-        <input
-          type="text"
-          placeholder="산책하고 싶은 곳을 검색하세요."
-          value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-        />
-        <button>
-          <img src="" alt="" />
-        </button>
         <div>지도 부분</div>
       </section>
       <section>
@@ -54,16 +62,23 @@ function WritePage() {
         </div>
         <form>
           <textarea placeholder="글을 입력해주세요." />
-          <input type="checkbox" name="tags" value="반려동물 동반" /> #반려동물
-          동반
-          <input type="checkbox" name="tags" value="한적한" /> #한적한
-          <input type="checkbox" name="tags" value="놀이터" /> #놀이터
-          <input type="checkbox" name="tags" value="운동기구" />
-          #운동기구
-          <input type="checkbox" name="tags" value="야경명소" /> #야경명소
-          <input type="checkbox" name="tags" value="낮에좋은" /> #낮에좋은
-          <input type="checkbox" name="tags" value="자전거" /> #자전거
-          <input type="checkbox" name="tags" value="소풍" /> #소풍
+          {TAG_LIST.map((item) => {
+            return (
+              <label key={item.id}>
+                <input
+                  type="checkbox"
+                  name="tags"
+                  value={item.data}
+                  id={item.id}
+                  onChange={(e) => {
+                    onCheckedTag(e.target.checked, e.target.value);
+                  }}
+                  checked={checkedList.includes(item.data) ? true : false}
+                />
+                {item.data}
+              </label>
+            );
+          })}
           <button
             type="submit"
             onClick={() => {
