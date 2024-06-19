@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddReview from '../../config/review.api';
-import { Button } from '../../common/components/Button';
+// import { Button } from '../../common/components/Button';
 
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
@@ -107,7 +107,7 @@ function WritePage() {
             alt="location-icon"
             className="h-10"
           />
-          <h2 className="text-2xl font-black text-gray-700 mx-3">
+          <h2 className="text-2xl font-black text-gray-700">
             지도에서 선택한 장소이름
           </h2>
           <span className="text-sm text-slate-400 leading-10">
@@ -123,14 +123,17 @@ function WritePage() {
             placeholder="글을 입력해주세요."
             className="w-11/12 h-80"
           />
-          <div>
+          <div className="my-8">
             {TAG_LIST.map((item) => {
               return (
-                <label key={item.id}>
+                <label
+                  key={item.id}
+                  className="px-5 py-3 bg-white cursor-pointer rounded-full text-white bg-secondary"
+                >
                   <input
                     type="checkbox"
                     name="tags"
-                    className="w-8 bg-white"
+                    className="hidden"
                     value={item.data}
                     id={item.id}
                     onChange={(e) => {
@@ -143,9 +146,13 @@ function WritePage() {
               );
             })}
           </div>
-          <Button type="submit" onClick={onSubmitBtn}>
+          <button
+            type="submit"
+            className="w-72 h-12 p-3 bg-sub text-primary font-black border-primary border-2"
+            onClick={onSubmitBtn}
+          >
             완료
-          </Button>
+          </button>
         </form>
       </section>
     </div>
