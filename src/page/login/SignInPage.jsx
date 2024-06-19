@@ -1,14 +1,9 @@
-// import { login } from '../../lib/api/auth';
-// import { loginAuth } from '../../redux/slices/authSlice';
-
 import { useState } from 'react';
 import { login } from '../../api/supabaseAuth';
 import { useModal } from '../../context/modal.context';
 import SignUpPage from './SignUpPage';
 
 const SignInPage = () => {
-  // const navigate = useNavigate();
-  // const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
   const [errors, setErrors] = useState({});
@@ -52,7 +47,7 @@ const SignInPage = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <span className="text-3xl text-center pb-10">로그인</span>
       <input

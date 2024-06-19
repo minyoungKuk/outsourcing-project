@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { register } from '../../api/supabaseAuth';
 import { useModal } from '../../context/modal.context';
-import imageSrc from './../../assets/132132.png';
 import supabase from './../../config/supabase';
 import SignInPage from './SignInPage';
 
@@ -27,9 +26,15 @@ const SignUpPage = () => {
   };
 
   const handleProfileImageChange = async (e) => {
+    console.log('File input change event triggered'); // 추가된 로그
+
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      console.log('File selected:', file); // 추가된 로그
+
       const sanitizedFileName = `${Date.now()}-${sanitizeFileName(file.name)}`;
+      console.log('Sanitized file name:', sanitizedFileName); // 추가된 로그
+
       const { data, error } = await supabase.storage
         .from('profile_image')
         .upload(sanitizedFileName, file);
@@ -40,24 +45,15 @@ const SignUpPage = () => {
         return;
       }
 
-      const { publicURL, error: urlError } = supabase.storage
-        .from('profile_image')
-        .getPublicUrl(sanitizedFileName);
+      console.log('File uploaded successfully:', data); // 추가된 로그
 
-      if (urlError) {
-        console.error('URL 가져오기 에러:', urlError);
-        alert('이미지 URL을 가져오는데 실패했습니다.');
-        return;
-      }
-
-      setProfileImageUrl(publicURL);
+      const { path } = data;
+      setProfileImageUrl(path);
       setProfileImage(URL.createObjectURL(file));
+      console.log('Uploaded profile image path:', path); // 추가된 로그
+    } else {
+      console.log('No file selected'); // 추가된 로그
     }
-  };
-
-  const onClickForceEmpty = () => {
-    setProfileImage(null);
-    setProfileImageUrl('');
   };
 
   const validateInputs = () => {
@@ -74,6 +70,15 @@ const SignUpPage = () => {
     if (password !== confirmPassword) {
       showErrors.confirmPassword = '비밀번호가 동일하지 않습니다.';
     }
+    if (!profileImageUrl) {
+      modal.open({
+        type: 'alert',
+        content: '프로필 사진은 필수입니다',
+        onConfirm: () => {
+          return;
+        },
+      });
+    }
     return showErrors;
   };
 
@@ -81,6 +86,7 @@ const SignUpPage = () => {
     const showErrors = validateInputs();
     if (Object.keys(showErrors).length > 0) {
       setErrors(showErrors);
+
       return;
     } else {
       setErrors({});
@@ -138,19 +144,6 @@ const SignUpPage = () => {
               <span className="text-gray-500">이미지 선택</span>
             )}
           </div>
-        </div>
-      </div>
-
-      <div className="flex justify-center items-center h-full">
-        <div className="relative inline-block">
-          <button
-            className="absolute inset-0 flex justify-center items-center w-6 h-6"
-            onClick={onClickForceEmpty}
-            style={{ zIndex: 10 }}
-          >
-            <span className="sr-only">Click</span>{' '}
-          </button>
-          <img src={imageSrc} alt="button image" className="w-6 h-6" />
         </div>
       </div>
 

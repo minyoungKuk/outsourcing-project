@@ -4,13 +4,13 @@ export const register = async ({
   email,
   password,
   nickname,
-  profile_image,
+  profile_image_url,
 }) => {
   console.log('🚀 ~ register parameters:', {
     email,
     password,
     nickname,
-    profile_image,
+    profile_image_url,
   });
 
   try {
@@ -20,7 +20,7 @@ export const register = async ({
       options: {
         data: {
           nickname: nickname,
-          profile_image_url: profile_image,
+          profile_image_url: profile_image_url,
         },
       },
     });
@@ -43,7 +43,7 @@ export const register = async ({
           email: email,
           password: password,
           nickname: nickname,
-          profile_image_url: profile_image,
+          profile_image_url: profile_image_url,
         },
       ]);
 
