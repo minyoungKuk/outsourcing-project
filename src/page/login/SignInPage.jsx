@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { login } from '../../api/supabaseAuth';
 import { useModal } from '../../context/modal.context';
@@ -9,14 +10,25 @@ const SignInPage = () => {
   const [errors, setErrors] = useState({});
   const modal = useModal();
 
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (e) => onSubmit({ e, email, password }),
+    onError: (e) => {
+      console.log(e);
+    },
+    onSuccess: () => {
+      alert('success');
+    },
+  });
+
   const openSignUpModal = () => {
+    alert('open signup');
     modal.open({
       type: 'signUp',
       content: <SignUpPage />,
     });
   };
 
-  const onSubmit = async (e) => {
+  const onSubmit = async ({ e, email, password }) => {
     e.preventDefault();
     console.log('id', email);
     console.log('password:', password);
@@ -34,19 +46,11 @@ const SignInPage = () => {
     } else {
       alert('무언가 잘못됨.');
     }
-
-    //   if (response) {
-    //     dispatch(loginAuth(response.accessToken)); // 로그인 성공 시 엑세스 토큰을 저장
-    //     alert('로그인 성공');
-    //     navigate('/home');
-    //   } else {
-    //     alert('로그인 실패. 다시 시도해주세요.');
-    //   }
   };
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={async (e) => await mutateAsync({ e, email, password })}
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <span className="text-3xl text-center pb-10">로그인</span>

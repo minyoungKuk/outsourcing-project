@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { register } from '../../api/supabaseAuth';
 import { useModal } from '../../context/modal.context';
@@ -13,6 +14,17 @@ const SignUpPage = () => {
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [errors, setErrors] = useState({});
   const modal = useModal();
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: (e) =>
+      onSubmit({ e, email, password, nickName, profileImageUrl }),
+    onError: (e) => {
+      console.log(e);
+    },
+    onSuccess: () => {
+      alert('success');
+    },
+  });
 
   const openSignInModal = () => {
     modal.open({
@@ -56,7 +68,7 @@ const SignUpPage = () => {
     }
   };
 
-  const validateInputs = () => {
+  const validateInputs = ({ email, password, nickName, profileImageUrl }) => {
     const showErrors = {};
     if (email.length < 4 || email.length > 30) {
       showErrors.email = '이메일은 6글자 이상 30글자 이하여야 합니다';
@@ -82,43 +94,66 @@ const SignUpPage = () => {
     return showErrors;
   };
 
-  const onAddUser = async () => {
-    const showErrors = validateInputs();
+  const onAddUser = async ({ email, password, nickName, profileImageUrl }) => {
+    const showErrors = validateInputs({
+      email,
+      password,
+      nickName,
+      profileImageUrl,
+    });
     if (Object.keys(showErrors).length > 0) {
       setErrors(showErrors);
-
       return;
     } else {
       setErrors({});
     }
+    console.log('회원가입 api 응답 :', showErrors);
 
-    const response = await register({
-      email: email,
-      password: password,
-      nickname: nickName,
-      profile_image_url: profileImageUrl,
-    });
-
-    console.log('회원가입 api 응답 :', response);
-    if (response) {
-      modal.open({
-        type: 'alert',
-        content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
-        onConfirm: () => {
-          modal.close();
-        },
+    try {
+      const response = await register({
+        email: email,
+        password: password,
+        nickname: nickName,
+        profile_image_url: profileImageUrl,
       });
+      console.log(response);
+    } catch (e) {
+      console.log(e);
     }
+
+    // console.log('회원가입 api 응답 :', response);
+    // if (response) {
+    //   modal.open({
+    //     type: 'alert',
+    //     content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
+    //     onConfirm: () => {
+    //       modal.close();
+    //     },
+    //   });
+    // }
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async ({
+    e,
+    email,
+    password,
+    nickName,
+    profileImageUrl,
+  }) => {
     e.preventDefault();
-    onAddUser();
+    alert('onSubmit');
+    try {
+      await onAddUser({ email, password, nickName, profileImageUrl });
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
     <form
-      onSubmit={onSubmit}
+      onSubmit={async (e) =>
+        await mutateAsync({ e, email, password, nickName, profileImageUrl })
+      }
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <div className="flex flex-col items-center">
