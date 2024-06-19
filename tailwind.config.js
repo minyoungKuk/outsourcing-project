@@ -21,6 +21,12 @@ export default {
           hover: '#2CC4F6',
         },
       },
+      width: {
+        600: '600px',
+      },
+      maxWidth: {
+        1080: '1080px',
+      },
     },
   },
   plugins: [],
