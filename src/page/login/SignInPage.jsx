@@ -11,6 +11,7 @@ const SignInPage = () => {
   // const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
+  const [errors, setErrors] = useState({});
   const modal = useModal();
 
   const openSignUpModal = () => {
@@ -28,8 +29,13 @@ const SignInPage = () => {
     console.log('로그인 api 응답값:', response);
 
     if (response) {
-      confirm('로그인성공');
-      modal.close();
+      modal.open({
+        type: 'alert',
+        content: '로그인 성공',
+        onConfirm: () => {
+          modal.close();
+        },
+      });
     } else {
       alert('무언가 잘못됨.');
     }
@@ -48,19 +54,32 @@ const SignInPage = () => {
       onSubmit={onSubmit}
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
     >
+      <span className="text-3xl text-center pb-10">로그인</span>
       <input
+        className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="email"
         placeholder="이메일주소"
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
+        className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         type="password"
         placeholder="비밀번호"
         onChange={(e) => setPassWord(e.target.value)}
       />
-      <button onClick={onSubmit}>로그인</button>
+      <button
+        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
+        onClick={onSubmit}
+      >
+        로그인
+      </button>
       {/* <button onClick={() => navigate('/signUp')}>회원가입</button> */}
-      <button onClick={openSignUpModal}>회원가입</button>
+      <button
+        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
+        onClick={openSignUpModal}
+      >
+        회원가입
+      </button>
     </form>
   );
 };

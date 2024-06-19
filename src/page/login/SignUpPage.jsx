@@ -3,6 +3,7 @@ import { register } from '../../api/supabaseAuth';
 import { useModal } from '../../context/modal.context';
 import imageSrc from './../../assets/132132.png';
 import supabase from './../../config/supabase';
+import SignInPage from './SignInPage';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
@@ -13,6 +14,13 @@ const SignUpPage = () => {
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [errors, setErrors] = useState({});
   const modal = useModal();
+
+  const openSignInModal = () => {
+    modal.open({
+      type: 'signIn',
+      content: <SignInPage />,
+    });
+  };
 
   const sanitizeFileName = (fileName) => {
     return fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
@@ -53,26 +61,26 @@ const SignUpPage = () => {
   };
 
   const validateInputs = () => {
-    const newErrors = {};
+    const showErrors = {};
     if (email.length < 4 || email.length > 30) {
-      newErrors.email = '이메일은 6글자 이상 30글자 이하여야 합니다';
+      showErrors.email = '이메일은 6글자 이상 30글자 이하여야 합니다';
     }
     if (password.length < 6 || password.length > 15) {
-      newErrors.password = '비밀번호는 6~15글자여야 합니다.';
+      showErrors.password = '비밀번호는 6~15글자여야 합니다.';
     }
     if (nickName.length < 4 || nickName.length > 10) {
-      newErrors.nickName = '닉네임은 4~10글자여야 합니다.';
+      showErrors.nickName = '닉네임은 4~10글자여야 합니다.';
     }
     if (password !== confirmPassword) {
-      newErrors.confirmPassword = '비밀번호가 동일하지 않습니다.';
+      showErrors.confirmPassword = '비밀번호가 동일하지 않습니다.';
     }
-    return newErrors;
+    return showErrors;
   };
 
   const onAddUser = async () => {
-    const newErrors = validateInputs();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    const showErrors = validateInputs();
+    if (Object.keys(showErrors).length > 0) {
+      setErrors(showErrors);
       return;
     } else {
       setErrors({});
@@ -87,8 +95,13 @@ const SignUpPage = () => {
 
     console.log('회원가입 api 응답 :', response);
     if (response) {
-      confirm('회원가입이 완료 되었습니다!');
-      modal.close();
+      modal.open({
+        type: 'alert',
+        content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
+        onConfirm: () => {
+          modal.close();
+        },
+      });
     }
   };
 
@@ -207,6 +220,7 @@ const SignUpPage = () => {
       <a
         href="/"
         className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 text-center"
+        onClick={openSignInModal}
       >
         로그인
       </a>

@@ -6,20 +6,28 @@ export const register = async ({
   nickname,
   profile_image,
 }) => {
+  console.log('🚀 ~ register parameters:', {
+    email,
+    password,
+    nickname,
+    profile_image,
+  });
+
   try {
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
       options: {
         data: {
-          displayName: nickname,
+          nickname: nickname,
           profile_image_url: profile_image,
         },
       },
     });
 
     if (error) {
-      throw error;
+      console.error('Sign Up Error:', error);
+      return { error: error.message };
     }
 
     const user = data.user;
@@ -33,20 +41,22 @@ export const register = async ({
         {
           id: user.id,
           email: email,
-          nickname: nickname,
           password: password,
+          nickname: nickname,
           profile_image_url: profile_image,
         },
       ]);
 
     if (dbError) {
-      throw dbError;
+      console.error('Database Insert Error:', dbError);
+      return { error: dbError.message };
     }
 
-    return insertData;
+    console.log('Database Insert Data:', insertData);
+    return { data: insertData };
   } catch (error) {
     console.error('회원가입 에러:', error);
-    alert(`Error: ${error.message || 'Unknown error occurred'}`);
+    return { error: error.message };
   }
 };
 
