@@ -1,7 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
+
 import { register } from '../../api/supabaseAuth';
+import Button from '../../common/components/Button';
 import { useModal } from '../../context/modal.context';
+import useAuthStore from '../../zustand/authStore';
 import supabase from './../../config/supabase';
 import SignInPage from './SignInPage';
 
@@ -14,13 +17,24 @@ const SignUpPage = () => {
   const [profileImageUrl, setProfileImageUrl] = useState('');
   const [errors, setErrors] = useState({});
   const modal = useModal();
+  const { login: setLogin } = useAuthStore();
 
   const { mutate } = useMutation({
     mutationFn: register,
     onError: (e) => {
-      console.log(e);
+      if (e.error.message) {
+        modal.open({
+          type: 'alert',
+          content: '무언가 잘못되었습니다',
+          onConfirm: () => {
+            modal.close();
+          },
+        });
+        setErrors({ general: '무언가 잘못되었습니다' });
+      }
     },
-    onSuccess: () => {
+
+    onSuccess: async () => {
       modal.open({
         type: 'alert',
         content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
@@ -28,6 +42,8 @@ const SignUpPage = () => {
           modal.close();
         },
       });
+      await setLogin(email, password);
+      //로그인페이지와 다르게 로그인상태를 모달 오픈 앞에 두면 헤더의 조건부 리렌더링 발동안됨
     },
   });
 
@@ -53,8 +69,8 @@ const SignUpPage = () => {
       console.log('Sanitized file name:', sanitizedFileName); // 추가된 로그
 
       const { data, error } = await supabase.storage
-      .from('profile_image')
-      .upload(sanitizedFileName, file);
+        .from('profile_image')
+        .upload(sanitizedFileName, file);
 
       if (error) {
         console.error('이미지 업로드 에러:', error);
@@ -75,7 +91,7 @@ const SignUpPage = () => {
 
   const validateInputs = ({ email, password, nickName, profileImageUrl }) => {
     const showErrors = {};
-    if (email.length < 4 || email.length > 30) {
+    if (email.length < 6 || email.length > 30) {
       showErrors.email = '이메일은 6글자 이상 30글자 이하여야 합니다';
     }
     if (password.length < 6 || password.length > 15) {
@@ -118,15 +134,17 @@ const SignUpPage = () => {
     });
   };
 
+  // 참조 회원가입 라벨은 사실 프로필이미지 //
   return (
     <form
       onSubmit={onSubmit}
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <div className="flex flex-col items-center">
-        <label htmlFor="profileImage" className="mb-2">
-          프로필 이미지
+        <label htmlFor="profileImage" className="mb-2 text-3xl p-8 font-bold">
+          회원가입
         </label>
+
         <div className="relative">
           <input
             id="profileImage"
@@ -135,8 +153,7 @@ const SignUpPage = () => {
             onChange={handleProfileImageChange}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <div
-            className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+          <div className="w-36 h-36 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -162,7 +179,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.email && (
-          <label className="text-red-500 text-left text-sm flow-root">
+          <label className="text-red-500 text-center text-sm flow-root">
             {errors.email}
           </label>
         )}
@@ -176,8 +193,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.password && (
-          <label
-            className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
             {errors.password}
           </label>
         )}
@@ -191,8 +207,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.confirmPassword && (
-          <label
-            className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
             {errors.confirmPassword}
           </label>
         )}
@@ -206,27 +221,33 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.nickName && (
-          <label
-            className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
             {errors.nickName}
           </label>
         )}
       </div>
 
-      <button
-        type="submit"
-        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
-      >
+      <Button size="large" color="primary" type="submit">
         회원가입
-      </button>
+      </Button>
 
-      <a
-        href="/"
-        className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 text-center"
-        onClick={openSignInModal}
+      <Button
+        size="large"
+        color="primary"
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          openSignInModal();
+        }}
       >
         로그인
-      </a>
+      </Button>
+
+      <img
+        src="/images/logo2.png"
+        alt="Logo"
+        className="mt-4 w-24 h-24 mx-auto "
+      />
     </form>
   );
 };

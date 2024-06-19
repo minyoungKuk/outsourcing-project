@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useModal } from '../context/modal.context';
+import useAuthStore from '../zustand/authStore';
 import SignInPage from './../page/login/SignInPage';
 
 function Header() {
@@ -10,6 +11,8 @@ function Header() {
       content: <SignInPage />,
     });
   };
+  const { isAuthenticated, logout } = useAuthStore();
+
   return (
     <>
       <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white">
@@ -39,7 +42,11 @@ function Header() {
             </div>
           </li>
           <li className="pl-0">
-            <button onClick={openLogInModal}>로그인</button>
+            {isAuthenticated ? (
+              <button onClick={logout}>로그아웃</button>
+            ) : (
+              <button onClick={openLogInModal}>로그인</button>
+            )}
           </li>
         </ul>
       </header>

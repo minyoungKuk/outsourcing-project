@@ -14,8 +14,6 @@ export const register = async ({
   });
 
   try {
-
-    debugger
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -66,7 +64,6 @@ export const register = async ({
 
 export const login = async ({ email, password }) => {
   try {
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
@@ -78,7 +75,7 @@ export const login = async ({ email, password }) => {
 
     return data;
   } catch (error) {
-    alert(`Error: ${error.message}`);
+    console.log(error.message); //정확한 에러 명칭은 콘솔에 뜨지만 알럿은 안뜨게 했음. 로그인창에만 에러를 모달창을 띄우기 위함
     throw error;
   }
 };
