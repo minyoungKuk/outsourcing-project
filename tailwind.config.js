@@ -21,7 +21,10 @@ export default {
           hover: '#2CC4F6',
         },
       },
+      width: {
+        600: '600px',
+      },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 };

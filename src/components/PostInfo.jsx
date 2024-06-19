@@ -2,39 +2,24 @@ import React from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import Likes from '../components/Likes';
+import ReviewContent from './ReviewContent';
 
-const PostInfo = () => {
+const PostInfo = ({ post }) => {
   return (
     <>
-      <div className="flex items-end mb-6 gap-10">
+      <div className="flex justify-center items-end mb-6 gap-3">
         <div className="flex gap-5">
-          <img className="w-5" src="/src/assets/images/pin.png" alt="pin-img" />
-          <h1 className="text-2xl font-bold">방화수류정 공원</h1>
+          <img className="w-5" src="public/images/pointer.png" alt="pin-img" />
+          {!post?.placeName || (
+            <h1 className="text-2xl font-bold">{post?.placeName}</h1>
+          )}
         </div>
-        <p className="text-gray-600">
-          경기도 수원시 장안구 어여큐 자캐구 010면 112치
-        </p>
+        <p className="text-gray-600">{post?.address}</p>
       </div>
 
-      <Carousel
-        showThumbs={false}
-        autoPlay
-        infiniteLoop
-        className="mx-auto mb-6 border-none"
-      >
-        <div>
-          <img
-            src="src/assets/images/665405_4101714264532_1057507630_o.jpg"
-            alt="review-pics"
-          />
-        </div>
-        <div>
-          <img src="src/assets/images/IMG_0499.jpg" alt="review-pics" />
-        </div>
-        <div>
-          <img src="src/assets/images/IMG_1532.jpg" alt="review-pics" />
-        </div>
-      </Carousel>
+      <div className="mx-auto mb-6 border-none flex justify-center">
+        <img src={post?.img_url} alt="review-pics" />
+      </div>
 
       <div className="text-base	mb-6 flex items-center justify-between p-8">
         <div className="text-base flex items-center">
@@ -47,20 +32,7 @@ const PostInfo = () => {
         </div>
         <Likes id="user1" initialLiked={false} />
       </div>
-      <p className="mb-6 p-8">리뷰 내용...</p>
-      <div className="mb-6 flex justify-between items-center p-8">
-        <p className="items-center bg-primary rounded-lg py-0.5 px-2 text-xs">
-          #반려견동반
-        </p>
-        <div className="text-sm">
-          <button className="text-gray-600 hover:text-gray-800 ml-4">
-            수정
-          </button>
-          <button className="text-gray-600 hover:text-gray-800 ml-2">
-            삭제
-          </button>
-        </div>
-      </div>
+      <ReviewContent post={post} />
     </>
   );
 };

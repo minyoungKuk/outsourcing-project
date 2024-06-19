@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Footer = () => {
   return (
-    <footer className="fixed z-20 bottom-0 left-0 w-full flex justify-center p-6 bg-white text-secondary border-t">
+    <footer className="sticky bottom-0 left-0 w-full flex justify-center p-6 bg-white text-secondary border-t">
       <a
         href="https://github.com/minyoungKuk/outsourcing-project.git"
         className="flex flex-col"
