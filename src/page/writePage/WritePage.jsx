@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+// import { supabase } from '../../config/supabase';
+import KakaoMapWithAddressSearchOfCreatePage from '../kakaoMapExamplePage/KakaoMapWithAddressSearchOfCreatePage';
 
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
@@ -12,8 +14,7 @@ const TAG_LIST = [
   { id: 7, data: '#소풍' },
 ];
 function WritePage() {
-  // const [isChecked, setIsChecked] = useState(false); // 체크박스가 체크됐는지
-  const [checkedList, setCheckedList] = useState([]); // 체크된 리스트를 저장
+  const [checkedList, setCheckedList] = useState([]);
   // const handleCheckboxChange = () => {
   //   // 체크박스가 체크 됐다면
   //   setIsChecked(!isChecked);
@@ -71,7 +72,9 @@ function WritePage() {
       </h1>
       <section className="max-w-1080">
         {/* 검색창 삽입 */}
-        <div className="max-w-1080 bg-slate-400 h-96">지도 부분</div>
+        <div className="max-w-1080 bg-slate-400 h-96">
+          <KakaoMapWithAddressSearchOfCreatePage />
+        </div>
       </section>
       <section>
         <div className="flex mb-8 mt-16 content-end">
@@ -94,7 +97,7 @@ function WritePage() {
           <textarea
             name="content"
             placeholder="글을 입력해주세요."
-            className="w-full h-60 border-2"
+            className="w-full h-60 px-4 py-2 border-2"
           />
           <div className="my-8">
             {TAG_LIST.map((item) => {
@@ -123,7 +126,7 @@ function WritePage() {
           </div>
           <button
             type="submit"
-            className="w-72 h-12 p-3 bg-sub text-primary font-black border-primary border-2 "
+            className="w-72 h-12 text-lg mt-12 bg-sub text-primary font-black border-primary border-2 "
             onClick={onSubmitBtn}
           >
             완료
