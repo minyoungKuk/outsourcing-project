@@ -11,9 +11,10 @@ const SignInPage = () => {
   // const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassWord] = useState('');
-  const { open } = useModal();
+  const modal = useModal();
+
   const openSignUpModal = () => {
-    open({
+    modal.open({
       type: 'signUp',
       content: <SignUpPage />,
     });
@@ -28,6 +29,7 @@ const SignInPage = () => {
 
     if (response) {
       confirm('로그인성공');
+      modal.close();
     } else {
       alert('무언가 잘못됨.');
     }

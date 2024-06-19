@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { register } from '../../api/supabaseAuth';
+import { useModal } from '../../context/modal.context';
 import imageSrc from './../../assets/132132.png';
 import supabase from './../../config/supabase';
 
@@ -10,7 +11,8 @@ const SignUpPage = () => {
   const [nickName, setNickName] = useState('');
   const [profileImage, setProfileImage] = useState(null);
   const [profileImageUrl, setProfileImageUrl] = useState('');
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+  const modal = useModal();
 
   const sanitizeFileName = (fileName) => {
     return fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
@@ -45,25 +47,35 @@ const SignUpPage = () => {
     }
   };
 
-  const onClickForceRender = () => {
-    window.location.reload();
+  const onClickForceEmpty = () => {
+    setProfileImage(null);
+    setProfileImageUrl('');
+  };
+
+  const validateInputs = () => {
+    const newErrors = {};
+    if (email.length < 4 || email.length > 30) {
+      newErrors.email = '이메일은 6글자 이상 30글자 이하여야 합니다';
+    }
+    if (password.length < 6 || password.length > 15) {
+      newErrors.password = '비밀번호는 6~15글자여야 합니다.';
+    }
+    if (nickName.length < 4 || nickName.length > 10) {
+      newErrors.nickName = '닉네임은 4~10글자여야 합니다.';
+    }
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = '비밀번호가 동일하지 않습니다.';
+    }
+    return newErrors;
   };
 
   const onAddUser = async () => {
-    if (email.length < 4 || email.length > 30) {
-      setError('이메일은 4글자 이상 30글자 이하여야 합니다');
-      return;
-    } else if (password.length < 6 || password.length > 15) {
-      setError('비밀번호는 6~15글자여야 합니다.');
-      return;
-    } else if (nickName.length < 4 || nickName.length > 10) {
-      setError('닉네임은 4~10글자여야 합니다.');
-      return;
-    } else if (password !== confirmPassword) {
-      setError('비밀번호가 동일하지 않습니다.');
+    const newErrors = validateInputs();
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     } else {
-      setError('');
+      setErrors({});
     }
 
     const response = await register({
@@ -76,6 +88,7 @@ const SignUpPage = () => {
     console.log('회원가입 api 응답 :', response);
     if (response) {
       confirm('회원가입이 완료 되었습니다!');
+      modal.close();
     }
   };
 
@@ -87,7 +100,7 @@ const SignUpPage = () => {
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg shadow-md"
+      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <div className="flex flex-col items-center">
         <label htmlFor="profileImage" className="mb-2">
@@ -101,7 +114,7 @@ const SignUpPage = () => {
             onChange={handleProfileImageChange}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <div className="w-72 h-72 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+          <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -119,7 +132,7 @@ const SignUpPage = () => {
         <div className="relative inline-block">
           <button
             className="absolute inset-0 flex justify-center items-center w-6 h-6"
-            onClick={onClickForceRender}
+            onClick={onClickForceEmpty}
             style={{ zIndex: 10 }}
           >
             <span className="sr-only">Click</span>{' '}
@@ -128,43 +141,61 @@ const SignUpPage = () => {
         </div>
       </div>
 
-      <input
-        type="email"
-        placeholder="로그인아이디(4~30글자 이내)"
-        minLength={4}
-        maxLength={30}
-        required
-        onChange={(e) => setEmail(e.target.value)}
-        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        type="password"
-        placeholder="비밀번호(6~15글자 이내)"
-        minLength={6}
-        maxLength={15}
-        required
-        onChange={(e) => setPassword(e.target.value)}
-        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        type="password"
-        placeholder="비밀번호 확인"
-        minLength={6}
-        maxLength={15}
-        required
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      {error && <label className="text-red-500">{error}</label>}
-      <input
-        type="text"
-        placeholder="닉네임(1~10글자 이내)"
-        minLength={4}
-        maxLength={10}
-        required
-        onChange={(e) => setNickName(e.target.value)}
-        className="border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <div>
+        <input
+          type="email"
+          placeholder="이메일(6~30글자 이내)"
+          onChange={(e) => setEmail(e.target.value)}
+          className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.email && (
+          <label className="text-red-500 text-left text-sm flow-root">
+            {errors.email}
+          </label>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          placeholder="비밀번호(6~15글자 이내)"
+          onChange={(e) => setPassword(e.target.value)}
+          className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.password && (
+          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+            {errors.password}
+          </label>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="password"
+          placeholder="비밀번호 확인"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.confirmPassword && (
+          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+            {errors.confirmPassword}
+          </label>
+        )}
+      </div>
+
+      <div>
+        <input
+          type="text"
+          placeholder="닉네임(4~10글자 이내)"
+          onChange={(e) => setNickName(e.target.value)}
+          className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        {errors.nickName && (
+          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+            {errors.nickName}
+          </label>
+        )}
+      </div>
 
       <button
         type="submit"
@@ -172,6 +203,7 @@ const SignUpPage = () => {
       >
         회원가입
       </button>
+
       <a
         href="/"
         className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 text-center"
