@@ -15,14 +15,19 @@ const SignUpPage = () => {
   const [errors, setErrors] = useState({});
   const modal = useModal();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: async () =>
-      await onSubmit({ email, password, nickName, profileImageUrl }),
+  const { mutate } = useMutation({
+    mutationFn: register,
     onError: (e) => {
       console.log(e);
     },
     onSuccess: () => {
-      alert('success');
+      modal.open({
+        type: 'alert',
+        content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
+        onConfirm: () => {
+          modal.close();
+        },
+      });
     },
   });
 
@@ -48,8 +53,8 @@ const SignUpPage = () => {
       console.log('Sanitized file name:', sanitizedFileName); // 추가된 로그
 
       const { data, error } = await supabase.storage
-        .from('profile_image')
-        .upload(sanitizedFileName, file);
+      .from('profile_image')
+      .upload(sanitizedFileName, file);
 
       if (error) {
         console.error('이미지 업로드 에러:', error);
@@ -83,76 +88,39 @@ const SignUpPage = () => {
       showErrors.confirmPassword = '비밀번호가 동일하지 않습니다.';
     }
     if (!profileImageUrl) {
-      modal.open({
-        type: 'alert',
-        content: '프로필 사진은 필수입니다',
-        onConfirm: () => {
-          return;
-        },
-      });
+      showErrors.profile = '프로필 사진은 필수입니다';
     }
     return showErrors;
   };
 
-  const onAddUser = async ({ email, password, nickName, profileImageUrl }) => {
+  const onSubmit = (e) => {
+    e.preventDefault();
+
     const showErrors = validateInputs({
       email,
       password,
       nickName,
       profileImageUrl,
     });
+
     if (Object.keys(showErrors).length > 0) {
       setErrors(showErrors);
       return;
-    } else {
-      setErrors({});
     }
+
     console.log('회원가입 api 응답 :', showErrors);
 
-    try {
-      const response = await register({
-        email: email,
-        password: password,
-        nickname: nickName,
-        profile_image_url: profileImageUrl,
-      });
-      console.log(response);
-    } catch (e) {
-      console.log(e);
-    }
-
-    // console.log('회원가입 api 응답 :', response);
-    // if (response) {
-    //   modal.open({
-    //     type: 'alert',
-    //     content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
-    //     onConfirm: () => {
-    //       modal.close();
-    //     },
-    //   });
-    // }
-  };
-
-  const onSubmit = async ({
-    e,
-    email,
-    password,
-    nickName,
-    profileImageUrl,
-  }) => {
-    alert('onSubmit');
-    try {
-      await onAddUser({ email, password, nickName, profileImageUrl });
-    } catch (e) {
-      console.log(e);
-    }
+    mutate({
+      email: email,
+      password: password,
+      nickname: nickName,
+      profile_image_url: profileImageUrl,
+    });
   };
 
   return (
     <form
-      onSubmit={async () =>
-        await mutateAsync({ email, password, nickName, profileImageUrl })
-      }
+      onSubmit={onSubmit}
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <div className="flex flex-col items-center">
@@ -167,7 +135,8 @@ const SignUpPage = () => {
             onChange={handleProfileImageChange}
             className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           />
-          <div className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+          <div
+            className="w-48 h-48 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
             {profileImage ? (
               <img
                 src={profileImage}
@@ -180,6 +149,10 @@ const SignUpPage = () => {
           </div>
         </div>
       </div>
+
+      <label className="text-red-500 text-sm flow-root text-center">
+        {errors.profile}
+      </label>
 
       <div>
         <input
@@ -203,7 +176,8 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.password && (
-          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label
+            className="text-red-500 text-red-500 text-left text-sm  flow-root">
             {errors.password}
           </label>
         )}
@@ -217,7 +191,8 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.confirmPassword && (
-          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label
+            className="text-red-500 text-red-500 text-left text-sm  flow-root">
             {errors.confirmPassword}
           </label>
         )}
@@ -231,7 +206,8 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.nickName && (
-          <label className="text-red-500 text-red-500 text-left text-sm  flow-root">
+          <label
+            className="text-red-500 text-red-500 text-left text-sm  flow-root">
             {errors.nickName}
           </label>
         )}

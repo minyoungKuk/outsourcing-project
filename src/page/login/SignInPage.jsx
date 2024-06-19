@@ -16,7 +16,13 @@ const SignInPage = () => {
       console.log(e);
     },
     onSuccess: () => {
-      alert('success');
+      modal.open({
+        type: 'alert',
+        content: '로그인 성공',
+        onConfirm: () => {
+          modal.close();
+        },
+      })
     },
   });
 
