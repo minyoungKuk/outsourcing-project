@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import AddReview from '../../config/review.api';
+import { Button } from '../../common/components/Button';
 
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
@@ -91,15 +92,27 @@ function WritePage() {
   };
 
   return (
-    <div className="mx-auto mt-20 w-9/12 bg-slate-200">
-      <h1 className="text-4xl font-black text-gray-700 ">산책 리뷰 작성</h1>
-      <section>
-        <div>지도 부분</div>
+    <div className="max-w-1080 mx-auto my-20 px-10 h-auto text-center bg-slate-100">
+      <h1 className="text-3xl font-black text-gray-700 text-center mb-12">
+        산책 리뷰 작성
+      </h1>
+      <section className="max-w-1080">
+        {/* 검색창 삽입 */}
+        <div className="max-w-1080 bg-slate-400 h-96">지도 부분</div>
       </section>
       <section>
-        <div>
-          <img src="#" alt="" />
-          <h2>지도에서 선택한 장소이름</h2> <span>주소</span>
+        <div className="flex ml-12 mb-8 mt-16 content-end">
+          <img
+            src="public\images\location-icon.png"
+            alt="location-icon"
+            className="h-10"
+          />
+          <h2 className="text-2xl font-black text-gray-700 mx-3">
+            지도에서 선택한 장소이름
+          </h2>
+          <span className="text-sm text-slate-400 leading-10">
+            경기도 수원시 장안구
+          </span>
         </div>
         <div>
           <img src="#" alt="" />
@@ -108,7 +121,7 @@ function WritePage() {
           <textarea
             name="content"
             placeholder="글을 입력해주세요."
-            className="w-3/4"
+            className="w-11/12 h-80"
           />
           <div>
             {TAG_LIST.map((item) => {
@@ -117,6 +130,7 @@ function WritePage() {
                   <input
                     type="checkbox"
                     name="tags"
+                    className="w-8 bg-white"
                     value={item.data}
                     id={item.id}
                     onChange={(e) => {
@@ -129,9 +143,9 @@ function WritePage() {
               );
             })}
           </div>
-          <button type="submit" onClick={onSubmitBtn}>
+          <Button type="submit" onClick={onSubmitBtn}>
             완료
-          </button>
+          </Button>
         </form>
       </section>
     </div>

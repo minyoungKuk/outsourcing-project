@@ -2,7 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import DefaultLayout from '../layouts/DefaultLayout';
 import Detail from '../page/detailPage/Detail';
 import HomePage from '../page/homePage/HomePage';
-import List from '../page/listPage/List';
+import ListPage from '../page/listPage/ListPage.jsx';
 import MyPage from '../page/myPage/MyPage';
 import WritePage from '../page/writePage';
 
@@ -21,7 +21,7 @@ const Router = createBrowserRouter([
       },
       {
         path: '/list',
-        element: <List />,
+        element: <ListPage />,
       },
       {
         path: '/write-page',
