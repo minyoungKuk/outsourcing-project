@@ -16,8 +16,8 @@ const SignUpPage = () => {
   const modal = useModal();
 
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (e) =>
-      onSubmit({ e, email, password, nickName, profileImageUrl }),
+    mutationFn: async () =>
+      await onSubmit({ email, password, nickName, profileImageUrl }),
     onError: (e) => {
       console.log(e);
     },
@@ -140,7 +140,6 @@ const SignUpPage = () => {
     nickName,
     profileImageUrl,
   }) => {
-    e.preventDefault();
     alert('onSubmit');
     try {
       await onAddUser({ email, password, nickName, profileImageUrl });
@@ -151,8 +150,8 @@ const SignUpPage = () => {
 
   return (
     <form
-      onSubmit={async (e) =>
-        await mutateAsync({ e, email, password, nickName, profileImageUrl })
+      onSubmit={async () =>
+        await mutateAsync({ email, password, nickName, profileImageUrl })
       }
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >

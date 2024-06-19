@@ -14,6 +14,8 @@ export const register = async ({
   });
 
   try {
+
+    debugger
     const { data, error } = await supabase.auth.signUp({
       email: email,
       password: password,
@@ -64,6 +66,7 @@ export const register = async ({
 
 export const login = async ({ email, password }) => {
   try {
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: email,
       password: password,
@@ -75,8 +78,7 @@ export const login = async ({ email, password }) => {
 
     return data;
   } catch (error) {
-    console.error('로그인 에러:', error);
-    alert(`Error: ${error.message || 'Unknown error occurred'}`);
+    alert(`Error: ${error.message}`);
     throw error;
   }
 };

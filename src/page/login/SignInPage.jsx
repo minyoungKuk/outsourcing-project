@@ -10,8 +10,8 @@ const SignInPage = () => {
   const [errors, setErrors] = useState({});
   const modal = useModal();
 
-  const { mutateAsync, isPending } = useMutation({
-    mutationFn: (e) => onSubmit({ e, email, password }),
+  const { mutate } = useMutation({
+    mutationFn: login,
     onError: (e) => {
       console.log(e);
     },
@@ -28,29 +28,12 @@ const SignInPage = () => {
     });
   };
 
-  const onSubmit = async ({ e, email, password }) => {
-    e.preventDefault();
-    console.log('id', email);
-    console.log('password:', password);
-    const response = await login({ email: email, password: password });
-    console.log('로그인 api 응답값:', response);
-
-    if (response) {
-      modal.open({
-        type: 'alert',
-        content: '로그인 성공',
-        onConfirm: () => {
-          modal.close();
-        },
-      });
-    } else {
-      alert('무언가 잘못됨.');
-    }
-  };
-
   return (
     <form
-      onSubmit={async (e) => await mutateAsync({ e, email, password })}
+      onSubmit={(e) =>  {
+        e.preventDefault();
+        mutate({ email, password })
+      }}
       className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
     >
       <span className="text-3xl text-center pb-10">로그인</span>
@@ -67,8 +50,8 @@ const SignInPage = () => {
         onChange={(e) => setPassWord(e.target.value)}
       />
       <button
+        type={'submit'}
         className="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
-        onClick={onSubmit}
       >
         로그인
       </button>
