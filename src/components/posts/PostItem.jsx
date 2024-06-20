@@ -7,7 +7,7 @@ const PostItem = ({ post, truncateWithEllipsis }) => {
       key={post.id}
       className="relative h-64 bg-cover bg-center cursor-pointer"
       style={{ backgroundImage: `url(${post.imgUrl})` }}
-      onClick={() => navigate(`/list/${post.id}`)}
+      onClick={() => navigate(`/detail/${post.id}`)}
     >
       <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col opacity-0 hover:opacity-100 transition-opacity duration-300">
         <div className="flex p-4 text-left">
