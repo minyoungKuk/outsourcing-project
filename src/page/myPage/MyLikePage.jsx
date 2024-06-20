@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getLikePostList } from '../../api/supabasePost';
 import PostItem from '../../components/posts/PostItem';
+
 const MyLikePage = () => {
   const navigate = useNavigate();
   const location = useLocation();

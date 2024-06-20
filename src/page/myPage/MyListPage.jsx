@@ -2,11 +2,14 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getMyPostList } from '../../api/supabasePost';
 import PostItem from '../../components/posts/PostItem';
+import useAuthStore from '../../zustand/authStore';
+import MyNotFindSearch from './MyNofindSearch';
 
 const MyListPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = 'd3616c58-1094-4dee-bf7b-7fcc1d92ab63';
+  const { user } = useAuthStore();
+  console.log(user);
 
   const truncateWithEllipsis = (text, maxLength) => {
     if (!text) return '';
@@ -24,10 +27,13 @@ const MyListPage = () => {
   };
 
   const {
-    data: post,
+    data: posts,
     isPending: isPendingPost,
     error: errorPost,
-  } = useQuery({ queryKey: ['post', userId], queryFn: getMyPostList });
+  } = useQuery({
+    queryKey: ['posts', user.id],
+    queryFn: getMyPostList,
+  });
 
   if (isPendingPost) {
     return <div>loading...</div>;
@@ -61,13 +67,20 @@ const MyListPage = () => {
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-          {post?.map((item) => (
-            <PostItem
-              key={item.id}
-              post={item}
-              truncateWithEllipsis={truncateWithEllipsis}
-            ></PostItem>
-          ))}
+          {posts?.length > 0 ? (
+            posts.map((item) => (
+              <PostItem
+                key={item.id}
+                post={item}
+                truncateWithEllipsis={truncateWithEllipsis}
+              />
+            ))
+          ) : (
+            <div>
+              {' '}
+              <MyNotFindSearch />
+            </div>
+          )}
         </div>
       </div>
     </>

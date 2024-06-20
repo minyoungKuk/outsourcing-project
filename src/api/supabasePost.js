@@ -47,13 +47,17 @@ export const deleteDetail = async (deletePostId) => {
   return data;
 };
 
-// getList(내가쓴 글 불러오기)
+// (내가쓴 글 불러오기)
 export const getMyPostList = async ({ queryKey }) => {
+  const userId = queryKey[1];
   const { data } = await supabase
     .from('POST')
     .select('*')
-    .eq('user_id', queryKey[1]);
+    .eq('user_id', userId);
 
+  console.log(userId);
+
+  //여기다가 로직 작성하기
   return data.map((post) => {
     return {
       id: post.id,
@@ -65,6 +69,7 @@ export const getMyPostList = async ({ queryKey }) => {
   });
 };
 
+// 좋아요 글 불러오기
 export const getLikePostList = async ({ queryKey }) => {
   console.log(queryKey[1]);
 

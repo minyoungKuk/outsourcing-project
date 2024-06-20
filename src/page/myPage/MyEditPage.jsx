@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import supabase from '../../config/supabase.js';
 import uploadFile from '../../utils/uploadFile.js';
 
-const MyPageEdit = () => {
+const MyEditPage = () => {
   // 상태 관리
 
   const [imgSrc, setImgSrc] = useState(null);
@@ -12,7 +12,6 @@ const MyPageEdit = () => {
   const [newNickname, setNewNickname] = useState(user?.nickname ?? '');
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = 'd3616c58-1094-4dee-bf7b-7fcc1d92ab63';
 
   // 이미지 미리보기 함수
   const saveFileImage = (img) => {
@@ -32,7 +31,6 @@ const MyPageEdit = () => {
     const fetchUser = async () => {
       const { data: getUserIdData, error: getUserIdError } =
         await supabase.auth.getSession();
-      console.log(getUserIdData);
       if (getUserIdError) {
         console.log(getUserIdError);
       }
@@ -40,7 +38,7 @@ const MyPageEdit = () => {
       const { data: userData } = await supabase
         .from('user')
         .select()
-        .eq('id', userId); //  << 유저 아이디 콘솔로 보고 필요한 값 꺼내기
+        .eq('id', getUserIdData.session.user.id); //  << 유저 아이디 콘솔로 보고 필요한 값 꺼내기
 
       setUser(userData[0]);
     };
@@ -90,7 +88,7 @@ const MyPageEdit = () => {
         nickname: newNickname,
         profile_image_url: profileImageFileName,
       })
-      .eq('id', userId);
+      .eq('id', user.id);
     if (error) {
       console.error('수정 오류', error);
       return;
@@ -188,4 +186,4 @@ const MyPageEdit = () => {
   );
 };
 
-export default MyPageEdit;
+export default MyEditPage;
