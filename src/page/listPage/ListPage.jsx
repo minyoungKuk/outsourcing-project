@@ -82,7 +82,7 @@ const ListPage = () => {
             <div
               className={'w-full h-12 font-sans not-italic text-4xl font-extrabold leading-10 text-center text-[#5E5E5E]'}>
               {
-                data?.pages[0].data.length !== 0 ?   `'${requestKeyword}' 검색결과 총 {}` :  `'${requestKeyword}' 검색 대한 결과가 없습니다.`
+                data?.pages[0].data.length !== 0 ?   `'${requestKeyword}' 검색결과` :  `'${requestKeyword}' 검색 대한 결과가 없습니다.`
               }
             </div>
             <div className={'w-full border-2  border-sky-400'} />

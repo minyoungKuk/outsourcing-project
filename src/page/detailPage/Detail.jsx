@@ -10,7 +10,9 @@ import {
   getDetails,
   updateDetail,
 } from '../../api/supabasePost';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import PostItem from '../../components/posts/PostItem.jsx';
+import uploadFile from '../../utils/uploadFile.js';
 
 const Detail = () => {
   const navigate = useNavigate();
@@ -19,6 +21,7 @@ const Detail = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState('');
   const [imgUrl, setImgUrl] = useState('');
+  const [imageFile, setImageFile] = useState(null);
   const { isAuthenticated, user } = useAuthStore();
   const [isEditable, setIsEditable] = useState(false);
 
@@ -36,6 +39,23 @@ const Detail = () => {
       setImgUrl(data?.img_url || '');
     },
   });
+
+  useEffect(() => {
+    return () => {
+      setIsEditing(false);
+      setIsEditable(false);
+    }
+  }, []);
+
+  const truncateWithEllipsis = (text, maxLength) => {
+    if (!text) {
+      return '';
+    }
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    }
+    return text;
+  };
 
   useEffect(() => {
     setContent(post?.content);
@@ -59,13 +79,13 @@ const Detail = () => {
     data: allPosts,
     isPending: isPendingAllPosts,
     error: errorAllPosts,
-  } = useQuery({ queryKey: ['allPost'], queryFn: getAllPosts });
+  } = useQuery({ queryKey: ['allPost', post], queryFn: getAllPosts });
 
   const updateMutation = useMutation({
     mutationFn: updateDetail,
     onSuccess: () => {
       queryClient.invalidateQueries(['post', id]);
-      queryClient.invalidateQueries('allPost');
+      // queryClient.invalidateQueries('allPost');
       setIsEditing(false);
     },
     onError: (error) => {
@@ -73,12 +93,20 @@ const Detail = () => {
     },
   });
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     if (post) {
+
+      let updateImageUrl = ""
+      if (imageFile){
+        updateImageUrl =  await uploadFile(imageFile, "post_img");
+      } else {
+        updateImageUrl = post.img_url;
+      }
+
       updateMutation.mutate({
         id: post.id,
         content,
-        img_url: imgUrl,
+        img_url: updateImageUrl,
       });
     }
     setIsEditable(false);
@@ -87,6 +115,7 @@ const Detail = () => {
   };
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+    setImageFile(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -125,8 +154,12 @@ const Detail = () => {
     textAreaRef.current.focus();
   };
 
-  if (isPendingPost) return <p>로딩중...</p>;
-  if (errorPost) return <p>로딩 실패: {errorPost.message}</p>;
+  if (isPendingPost) {
+    return <p>로딩중...</p>;
+  }
+  if (errorPost) {
+    return <p>로딩 실패: {errorPost.message}</p>;
+  }
 
   return (
     <div className="p-4 mx-auto max-w-[1080px] mt-10">
@@ -145,7 +178,8 @@ const Detail = () => {
             />
 
             <div className="flex justify-between align-baseline">
-              <p className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
+              <p
+                className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
                 {categories ? categories.category_id : ''}
               </p>
             </div>
@@ -223,30 +257,11 @@ const Detail = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-6">이 곳의 다른 리뷰</h2>
             <div className="grid grid-cols-3 gap-5 overflow-x-auto">
-              {filteredAddresses?.map((item) => (
-                <div
-                  key={item.id}
-                  className="relative w-[300px] h-full group"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setIsEditable(false);
-                    navigate(`/detail/${item.id}`);
-                  }}
-                >
-                  {item.img_url && (
-                    <img
-                      src={item.img_url}
-                      alt="Other Reviews"
-                      className="w-full h-full object-cover transition-opacity duration-300 group-hover:opacity-50"
-                    />
-                  )}
-                  <div className="absolute inset-0 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black bg-opacity-70 text-white p-4">
-                    <span className="text-md leading-snug mb-1 overflow-hidden text-ellipsis line-clamp-5 whitespace-pre-line">
-                      {item.content}
-                    </span>
-                  </div>
-                </div>
-              ))}
+              {filteredAddresses?.map((item) => {
+                return <PostItem key={item.id} post={item}
+                                 truncateWithEllipsis={truncateWithEllipsis} />;
+              })
+              }
             </div>
           </div>
         </>
