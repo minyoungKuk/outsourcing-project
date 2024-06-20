@@ -3,46 +3,58 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAuthStore from '../zustand/authStore';
+import { useModal } from '../context/modal.context';
+import SignInPage from '../page/login/SignInPage';
 
-const Likes = ({ id, initialLiked }) => {
+const Likes = ({ initialLiked }) => {
+  const modal = useModal();
   const queryClient = useQueryClient();
+  const { user } = useAuthStore();
   const [liked, setLiked] = useState(initialLiked);
   const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     const fetchLikeCount = async () => {
-      const response = await fetch(`/api/likeCount/${id}`);
+      const response = await fetch(`/api/likeCount/${user?.id}`);
       const data = await response.json();
       setLikeCount(data.likeCount);
     };
 
-    fetchLikeCount();
-  }, [id]);
+    // fetchLikeCount();
+  }, [user?.id]);
 
   const mutation = useMutation({
     onMutate: async () => {
-      await queryClient.cancelQueries(['likeCount', id]);
-      const previousCount = queryClient.getQueryData(['likeCount', id]);
+      await queryClient.cancelQueries(['likeCount', user?.id]);
+      const previousCount = queryClient.getQueryData(['likeCount', user?.id]);
       queryClient.setQueryData(
-        ['likeCount', id],
+        ['likeCount', user?.id],
         (prevCount) => prevCount + (liked ? -1 : 1),
       );
       return { previousCount };
     },
     onError: (err, variables, context) => {
-      queryClient.setQueryData(['likeCount', id], context.previousCount);
+      queryClient.setQueryData(['likeCount', user?.id], context.previousCount);
     },
     onSettled: () => {
-      queryClient.invalidateQueries(['likeCount', id]);
+      queryClient.invalidateQueries(['likeCount', user?.id]);
     },
   });
 
   const handleLikeClick = async () => {
-    setLiked(!liked);
-    await mutation.mutateAsync();
-    const response = await fetch(`/api/likeCount/${id}`);
-    const data = await response.json();
-    setLikeCount(data.likeCount);
+    if (!user) {
+      modal.open({
+        type: 'login',
+        content: <SignInPage />,
+      });
+    } else {
+      setLiked(!liked);
+      await mutation.mutateAsync();
+      const response = await fetch(`/api/likeCount/${user?.id}`);
+      const data = await response.json();
+      setLikeCount(data.likeCount);
+    }
   };
 
   return (

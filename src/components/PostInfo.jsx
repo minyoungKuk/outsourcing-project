@@ -1,8 +1,19 @@
+import React from 'react';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import Likes from '../components/Likes';
-import ReviewContent from './ReviewContent';
+import { useQuery } from '@tanstack/react-query';
+import { getUserProfile } from '../api/supabasePost';
 
-const PostInfo = ({ post }) => {
+const PostInfo = ({ post, user }) => {
+  const {
+    data,
+    isPending: isPendingPost,
+    error: errorPost,
+  } = useQuery({
+    queryKey: ['userProfile', post.user_id],
+    queryFn: getUserProfile,
+  });
+
   return (
     <>
       <div className="flex justify-center items-end mb-6 gap-3">
@@ -19,18 +30,17 @@ const PostInfo = ({ post }) => {
         <img src={post?.img_url} alt="review-pics" />
       </div>
 
-      <div className="text-base	mb-6 flex items-center justify-between p-8">
+      <div className="text-base flex items-center justify-between p-4">
         <div className="text-base flex items-center">
           <img
-            src="src/assets/images/my_profile.png"
+            src={data?.profile_image_url}
             alt="User"
             className="w-10 h-10 rounded-full mr-4"
           />
-          <p>사용자1</p>
+          <p>{data?.nickname}</p>
         </div>
-        <Likes id="user1" initialLiked={false} />
+        <Likes initialLiked={false} />
       </div>
-      <ReviewContent post={post} />
     </>
   );
 };
