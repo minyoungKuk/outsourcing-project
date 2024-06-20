@@ -1,9 +1,12 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import defaultImage from '../assets/defaultImage.png';
 import { useModal } from '../context/modal.context';
 import useAuthStore from '../zustand/authStore';
 import SignInPage from './../page/login/SignInPage';
 
 function Header() {
+  const { isAuthenticated, logout, user } = useAuthStore();
   const { open } = useModal();
   const openLogInModal = () => {
     open({
@@ -11,7 +14,24 @@ function Header() {
       content: <SignInPage />,
     });
   };
-  const { isAuthenticated, logout } = useAuthStore();
+
+  const handleLogout = () => {
+    open({
+      type: 'confirm',
+      content: '정말 로그아웃 하시겠습니까?',
+      onConfirm: () => {
+        logout();
+      },
+    });
+  };
+
+  useEffect(() => {
+    if (user) {
+      console.log('Current user:', user);
+    }
+  }, [user]);
+
+  const profileImageUrl = user ? user.profile_image_url : defaultImage;
 
   return (
     <>
@@ -34,16 +54,24 @@ function Header() {
           </li>
           <li className="pr-0">
             <div>
-              <img
-                className="w-12 h-12 rounded-full bg-danger"
-                src="/images/logo.png"
-                alt="user profile"
-              />
+              {isAuthenticated && user ? (
+                <div
+                  className="w-12 h-12 rounded-full bg-cover bg-center"
+                  style={{ backgroundImage: `url(${profileImageUrl})` }}
+                  alt="/images/logo.png"
+                />
+              ) : (
+                <img
+                  className="w-12 h-12 rounded-full bg-danger"
+                  src="/images/logo.png"
+                  alt="default profile"
+                />
+              )}
             </div>
           </li>
           <li className="pl-0">
             {isAuthenticated ? (
-              <button onClick={logout}>로그아웃</button>
+              <button onClick={handleLogout}>로그아웃</button>
             ) : (
               <button onClick={openLogInModal}>로그인</button>
             )}
