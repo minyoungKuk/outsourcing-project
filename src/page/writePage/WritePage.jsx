@@ -67,6 +67,7 @@ function WritePage() {
         const categoryResponse = await createPostCategory(insertList);
         console.log('categoryResponse:', categoryResponse);
         if (categoryResponse) {
+          openModal('업로드 되었습니다.');
           navigate(`/list`);
           queryClient.invalidateQueries('allPosts');
           setContent('');
