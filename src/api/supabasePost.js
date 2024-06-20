@@ -32,9 +32,9 @@ export const getAllPosts = async () => {
 //특정 id를 가진 글의 정보
 export const getDetails = async ({ queryKey }) => {
   const { data, error } = await supabase
-    .from('POST')
-    .select('*')
-    .eq('id', queryKey[1]);
+  .from('POST')
+  .select('*')
+  .eq('id', queryKey[1]);
   if (error) {
     throw new Error(error.message);
   }
@@ -154,4 +154,68 @@ export const deletePost = async (postId) => {
     throw new Error(error.message);
   }
   return;
+};
+
+//좋아요 조회
+export const existLike = async ({ queryKey }) => {
+  let { data: likeData, error } = await supabase
+  .from('POST_LIKE')
+  .select('id')
+  .eq('user_id', queryKey[1])
+  .eq('post_id', queryKey[2]);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return !!likeData;
+};
+
+//좋아요 생성
+export const createLike = async ({ userId, postId }) => {
+  const { data, error } = await supabase
+  .from('POST_LIKE')
+  .insert([
+    { user_id: userId, post_id: postId },
+  ])
+  .select();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+//좋아요 삭제
+export const deleteLike = async ({ userId, postId }) => {
+  const { error } = await supabase
+  .from('POST_LIKE')
+  .delete()
+  .eq('user_id', userId)
+  .eq('post_id', postId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+};
+
+//좋아요 카운트 업데이트
+export const updateLikeCnt = async ({ postId, cnt }) => {
+  const { data, error } = await supabase
+  .from('POST')
+  .select('like_cnt')
+  .eq('id', postId);
+
+  if (!error) {
+    await supabase
+    .from('POST')
+    .update({ like_cnt: (data[0].like_cnt + cnt) })
+    .eq('id', postId)
+    .select();
+  } else {
+    throw new Error(error.message);
+  }
+
+  return cnt;
 };

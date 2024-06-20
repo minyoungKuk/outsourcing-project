@@ -1,44 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons';
 import { faHeart as fasHeart } from '@fortawesome/free-solid-svg-icons';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useAuthStore from '../zustand/authStore';
 import { useModal } from '../context/modal.context';
 import SignInPage from '../page/login/SignInPage';
+import {
+  createLike,
+  deleteLike,
+  existLike,
+  updateLikeCnt,
+} from '../api/supabasePost.js';
 
-const Likes = ({ initialLiked }) => {
+const Likes = ({ post }) => {
+  const { user } = useAuthStore();
+
   const modal = useModal();
   const queryClient = useQueryClient();
-  const { user } = useAuthStore();
-  const [liked, setLiked] = useState(initialLiked);
+  const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
+  //좋아요 여부
+  const {
+    data: isLike,
+  } = useQuery({
+    queryKey: ['like', user?.id, post?.id],
+    queryFn: existLike,
+  });
+
+  //좋아요여부
   useEffect(() => {
-    const fetchLikeCount = async () => {
-      const response = await fetch(`/api/likeCount/${user?.id}`);
-      const data = await response.json();
-      setLikeCount(data.likeCount);
-    };
+    setLiked(isLike);
+  }, [isLike]);
 
-    // fetchLikeCount();
-  }, [user?.id]);
+  //좋아요 개수
+  useEffect(() => {
+    setLikeCount(post?.like_cnt);
+  }, [post]);
 
-  const mutation = useMutation({
-    onMutate: async () => {
-      await queryClient.cancelQueries(['likeCount', user?.id]);
-      const previousCount = queryClient.getQueryData(['likeCount', user?.id]);
-      queryClient.setQueryData(
-        ['likeCount', user?.id],
-        (prevCount) => prevCount + (liked ? -1 : 1),
-      );
-      return { previousCount };
+  const { mutate: updateLikeCntMutate } = useMutation({
+    mutationFn: updateLikeCnt,
+    onSuccess: (cnt) => {
+      if (cnt > 0) {
+        createLikeMutate({ userId: user?.id, postId: post?.id });
+      } else {
+        deleteLikeMutate({ userId: user?.id, postId: post?.id });
+      }
     },
-    onError: (err, variables, context) => {
-      queryClient.setQueryData(['likeCount', user?.id], context.previousCount);
+  });
+
+  const { mutate: createLikeMutate } = useMutation({
+    mutationFn: createLike,
+    onSuccess: () => {
+      // alert("데이터 삽입이 성공했습니다.");
+      queryClient.invalidateQueries(['post']);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries(['likeCount', user?.id]);
+  });
+
+  const { mutate: deleteLikeMutate } = useMutation({
+    mutationFn: deleteLike,
+    onSuccess: () => {
+      // alert("데이터 삽입이 성공했습니다.");
+      queryClient.invalidateQueries(['post']);
     },
   });
 
@@ -49,11 +73,8 @@ const Likes = ({ initialLiked }) => {
         content: <SignInPage />,
       });
     } else {
+      updateLikeCntMutate({ postId: post?.id, cnt: liked ? -1 : 1 });
       setLiked(!liked);
-      await mutation.mutateAsync();
-      const response = await fetch(`/api/likeCount/${user?.id}`);
-      const data = await response.json();
-      setLikeCount(data.likeCount);
     }
   };
 

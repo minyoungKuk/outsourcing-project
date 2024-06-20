@@ -39,7 +39,7 @@ const PostInfo = ({ post, user }) => {
           />
           <p>{data?.nickname}</p>
         </div>
-        <Likes initialLiked={false} />
+        <Likes post={post} />
       </div>
     </>
   );

@@ -1,7 +1,6 @@
 import supabase from '../config/supabase';
 
 const uploadFile = async (file, bucket) => {
-  debugger;
   try {
     const filePath = generateFilePath(file.name);
     // 파일 업로드
