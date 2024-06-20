@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const { kakao } = window;
 
 function KakaoMapWithPost({ postList = [] }) {
-
+  const navigate = useNavigate();
   const [location, setLocation] = useState({ latitude: null, longitude: null });
 
   useEffect(() => {
@@ -53,9 +54,10 @@ function KakaoMapWithPost({ postList = [] }) {
     };
   };
 
-  const moveDetail = () => {
-    alert('라우터가 확정되면 디테일 페이지로 이동하도록 수정 할 예정');
-    //TODO 디테일 페이지로 이동 가능하도록
+  const moveDetail = (detailId) => {
+    if (detailId) {
+      navigate(`/detail/${detailId}`);
+    }
   };
 
   useEffect(() => {
@@ -75,7 +77,7 @@ function KakaoMapWithPost({ postList = [] }) {
                   text-align: center;
                   overflow: hidden;
                   white-space: nowrap;
-                ">${post.placeName ||  post.address }<a>`,
+                ">${post.placeName || post.address}<a>`,
         id: post.id,
         latlng: new kakao.maps.LatLng(post.latitude, post.longitude),
       };
@@ -121,7 +123,7 @@ function KakaoMapWithPost({ postList = [] }) {
 
         // 마커에 클릭이벤트를 등록합니다
         kakao.maps.event.addListener(marker, 'click', function() {
-          moveDetail();
+          moveDetail(positions[i].id);
         });
       })(i);
     }

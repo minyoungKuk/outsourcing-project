@@ -1,11 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
-import { useState } from 'react';
-
+import React, { useState } from 'react';
 import { register } from '../../api/supabaseAuth';
 import Button from '../../common/components/Button';
 import { useModal } from '../../context/modal.context';
+import uploadFile from '../../utils/uploadFile';
 import useAuthStore from '../../zustand/authStore';
-import supabase from './../../config/supabase';
 import SignInPage from './SignInPage';
 
 const SignUpPage = () => {
@@ -33,17 +32,15 @@ const SignUpPage = () => {
         setErrors({ general: '무언가 잘못되었습니다' });
       }
     },
-
     onSuccess: async () => {
       modal.open({
         type: 'alert',
-        content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
+        content: '회원가입이 완료 되었습니다.',
         onConfirm: () => {
           modal.close();
         },
       });
       await setLogin(email, password);
-      //로그인페이지와 다르게 로그인상태를 모달 오픈 앞에 두면 헤더의 조건부 리렌더링 발동안됨
     },
   });
 
@@ -54,38 +51,19 @@ const SignUpPage = () => {
     });
   };
 
-  const sanitizeFileName = (fileName) => {
-    return fileName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-  };
-
   const handleProfileImageChange = async (e) => {
-    console.log('File input change event triggered'); // 추가된 로그
-
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      console.log('File selected:', file); // 추가된 로그
-
-      const sanitizedFileName = `${Date.now()}-${sanitizeFileName(file.name)}`;
-      console.log('Sanitized file name:', sanitizedFileName); // 추가된 로그
-
-      const { data, error } = await supabase.storage
-        .from('profile_image')
-        .upload(sanitizedFileName, file);
-
-      if (error) {
-        console.error('이미지 업로드 에러:', error);
-        alert('이미지 업로드에 실패했습니다.');
-        return;
-      }
-
-      console.log('File uploaded successfully:', data); // 추가된 로그
-
-      const { path } = data;
-      setProfileImageUrl(path);
+    const file = e.target.files[0];
+    if (file) {
       setProfileImage(URL.createObjectURL(file));
-      console.log('Uploaded profile image path:', path); // 추가된 로그
-    } else {
-      console.log('No file selected'); // 추가된 로그
+      const url = await uploadFile(file, 'profile_image'); // 'your-bucket-name'을 실제 버킷 이름으로 교체
+      if (url) {
+        setProfileImageUrl(url);
+      } else {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          profile: '프로필 사진 업로드에 실패했습니다.',
+        }));
+      }
     }
   };
 
@@ -134,11 +112,10 @@ const SignUpPage = () => {
     });
   };
 
-  // 참조 회원가입 라벨은 사실 프로필이미지 //
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg "
+      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg"
     >
       <div className="flex flex-col items-center">
         <label htmlFor="profileImage" className="mb-2 text-3xl p-8 font-bold">
@@ -193,7 +170,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.password && (
-          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
+          <label className="text-red-500 text-center text-sm flow-root">
             {errors.password}
           </label>
         )}
@@ -207,7 +184,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.confirmPassword && (
-          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
+          <label className="text-red-500 text-center text-sm flow-root">
             {errors.confirmPassword}
           </label>
         )}
@@ -221,7 +198,7 @@ const SignUpPage = () => {
           className="border border-gray-300 p-2 px-8 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {errors.nickName && (
-          <label className="text-red-500 text-red-500 text-center text-sm  flow-root">
+          <label className="text-red-500 text-center text-sm flow-root">
             {errors.nickName}
           </label>
         )}
@@ -243,11 +220,7 @@ const SignUpPage = () => {
         로그인
       </Button>
 
-      <img
-        src="/images/logo2.png"
-        alt="Logo"
-        className="mt-4 w-24 h-24 mx-auto "
-      />
+      <img src="/images/logo2.png" alt="Logo" className="w-auto h-auto" />
     </form>
   );
 };
