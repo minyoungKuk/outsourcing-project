@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
-import KakaoMapWithAddressSearch from '../../components/kakao/KakaoMapWithAddressSearch.jsx';
+import KakaoMapWithAddressSearch
+  from '../../components/kakao/KakaoMapWithAddressSearch.jsx';
+import useKakaoMapStore from '../../zustand/kakaoMapStore.js';
 import supabase from '../../config/supabase.js';
-import useKakaoMapStore from '../../zustand/kakaoMap/kakaoMapStore.js';
+import { useEffect } from 'react';
 
 function KakaoMapWithAddressSearchOfUpdatePage() {
   //유저가 주소를 검색완료 했다면 map이 기본값외에 주소들을 가지고 있다.

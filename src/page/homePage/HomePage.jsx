@@ -4,18 +4,24 @@ import KakaoMapWithPost from '../../components/kakao/KakaoMapWithPost';
 import PostItem from '../../components/posts/PostItem';
 import SearchForm from '../../components/posts/SearchForm';
 import useFetchHomePagePost from '../../hooks/useFetchHomePagePost';
+import useListStore from '../../zustand/listStore.js';
 
 const HomePage = () => {
+  const { setKeyword } = useListStore((state) => state);
+
   const navigate = useNavigate();
   const { postList, popularPostList } = useFetchHomePagePost();
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearch = () => {
-    navigate(`/list?keyword=${searchQuery}`);
+    setKeyword(searchQuery);
+    navigate('/list');
   };
 
   const truncateWithEllipsis = (text, maxLength) => {
-    if (!text) return '';
+    if (!text) {
+      return '';
+    }
     if (text.length > maxLength) {
       return text.slice(0, maxLength) + '...';
     }
