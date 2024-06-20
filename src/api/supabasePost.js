@@ -1,24 +1,25 @@
-import supabase from '../config/supabase';
+import supabase from '../config/supabase.js';
+
 // create
 export const createDetail = async (post) => {
   const data = await supabase.from('POST').insert(post).select('*');
   // if (error) {
   //   throw new Error(error.message);
   // }
-  console.log(data.data[0]);
   return data.data[0];
 };
+
 export const createPostCategory = async (category) => {
   const { data, error } = await supabase
-    .from('POST_CATEGORY')
-    .insert(category)
-    .select();
+  .from('POST_CATEGORY')
+  .insert(category)
+  .select();
   if (error) {
     throw new Error(error.message);
   }
-  console.log('카태고리 data', data); // 디버깅 로그 추가
   return data;
 };
+
 // read - 1개 포스트
 export const getDetails = async ({ queryKey }) => {
   const { data } = await supabase
@@ -27,6 +28,7 @@ export const getDetails = async ({ queryKey }) => {
     .eq('id', queryKey[1]);
   return data[0];
 };
+
 // read - 전체 포스트
 export const getAllPosts = async () => {
   let { data: allData } = await supabase.from('POST').select('*');
@@ -34,24 +36,54 @@ export const getAllPosts = async () => {
 
   return allData;
 };
+
+//특정 id를 가진 글 카테고리
+export const getCategories = async ({ queryKey }) => {
+  const { data, error } = await supabase
+  .from('POST_CATEGORY')
+  .select('category_id')
+  .eq('post_id', queryKey[1]);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data[0];
+};
+
+//유저아이디를 이용해 프로필사진 가져오기
+export const getUserProfile = async ({ queryKey }) => {
+  console.log(queryKey[1]);
+  const { data, error } = await supabase
+  .from('user')
+  .select('profile_image_url', 'nickname')
+  .eq('id', queryKey[1]);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  console.log(data);
+
+  return data;
+};
+
 // update
 export const updateDetail = async (changedPost) => {
   const { data, error } = await supabase
-    .from('POST')
-    .update(changedPost)
-    .eq('id', changedPost.id)
-    .select();
+  .from('POST')
+  .update(changedPost)
+  .eq('id', changedPost.id)
+  .select();
   if (error) {
     throw new Error(error.message);
   }
   return data;
 };
+
 // delete
 export const deleteDetail = async (deletePostId) => {
   const { data, error } = await supabase
-    .from('POST')
-    .delete()
-    .eq('id', deletePostId);
+  .from('POST')
+  .delete()
+  .eq('id', deletePostId);
   if (error) {
     throw new Error(error.message);
   }
@@ -110,4 +142,14 @@ export const getPostByIdIn = async (postIdList) => {
     .in('id', postIdList);
 
   return POST;
+};
+
+// delete
+export const deletePost = async (postId) => {
+  const { data, error } = await supabase.from('POST').delete().eq('id',
+    postId);
+  if (error) {
+    throw new Error(error.message);
+  }
+  return;
 };
