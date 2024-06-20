@@ -1,8 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import KakaoMapWithAddressSearchOfCreatePage from '../kakaoMapExamplePage/KakaoMapWithAddressSearchOfCreatePage';
 import KakaoMapWithAddressSearch from '../../components/kakao/KakaoMapWithAddressSearch';
-import useKakaoMapStore from '../../zustand/kakaoMap/kakaoMapStore';
+import useKakaoMapStore from '../../zustand/kakaoMapStore';
 import supabase from '../../config/supabase';
 import uploadFile from '../../utils/uploadFile';
 
@@ -75,28 +74,28 @@ function WritePage() {
             };
           });
 
-          supabase
-            .from('POST_CATEGORY')
-            .insert(insertList)
-            .select()
-            .then((response) => {
-              if (!response.error) {
-                alert('저장되었습니다.');
-              }
-            });
+          if (file === null) {
+            alert('사진을 첨부해주세요.');
+          } else if (checkedList.length === 0) {
+            alert('태그를 1개 이상 선택해주세요');
+          } else if (content === '') {
+            alert('게시글을 작성해주세요.');
+          } else if (map.address === '') {
+            alert('리뷰할 장소를 선택해주세요.');
+          } else {
+            supabase
+              .from('POST_CATEGORY')
+              .insert(insertList)
+              .select()
+              .then((response) => {
+                if (!response.error) {
+                  alert('저장되었습니다.');
+                  navigate(`/detail/${response.data[0].post_id}`);
+                }
+              });
+          }
         }
       });
-    if (file === null) {
-      alert('사진을 첨부해주세요.');
-    } else if (checkedList.length === 0) {
-      alert('태그를 1개 이상 선택해주세요');
-    } else if (content === '') {
-      alert('게시글을 작성해주세요.');
-    } else if (map.address === '') {
-      alert('리뷰할 장소를 선택해주세요.');
-    }
-
-    navigate('/detail');
   };
   console.log(map.address);
   return (
