@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import PostInfo from '../../components/PostInfo';
 import KakaoMap from '../../components/kakao/KakaoMap';
 import { useQuery } from '@tanstack/react-query';
-import { getAllPosts, getDetails } from '../../api/detailApi';
 import { Link, useParams } from 'react-router-dom';
+import { getAllPosts, getDetails } from '../../api/supabasePost';
 
 const Detail = () => {
   const { id } = useParams();
@@ -11,7 +11,7 @@ const Detail = () => {
     data: post,
     isPending: isPendingPost,
     error: errorPost,
-  } = useQuery({ queryKey: ['post'], queryFn: getDetails });
+  } = useQuery({ queryKey: ['post', id], queryFn: getDetails });
 
   const {
     data: allPosts,
@@ -31,7 +31,6 @@ const Detail = () => {
     }
   }, [allPosts, post]);
 
-  console.log(filteredAddresses);
   return (
     <div className="p-4 mx-auto max-w-[1080px] mt-10">
       <PostInfo post={post} />

@@ -1,5 +1,3 @@
-import React from 'react';
-import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import Likes from '../components/Likes';
 import ReviewContent from './ReviewContent';
@@ -9,7 +7,7 @@ const PostInfo = ({ post }) => {
     <>
       <div className="flex justify-center items-end mb-6 gap-3">
         <div className="flex gap-5">
-          <img className="w-5" src="public/images/pointer.png" alt="pin-img" />
+          <img className="w-5" src="/public/images/pointer.png" alt="pin-img" />
           {!post?.placeName || (
             <h1 className="text-2xl font-bold">{post?.placeName}</h1>
           )}

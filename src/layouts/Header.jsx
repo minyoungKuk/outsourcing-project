@@ -1,11 +1,12 @@
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
 import supabase from '../config/supabase';
 import { useModal } from '../context/modal.context';
 import useAuthStore from '../zustand/authStore';
 import SignInPage from './../page/login/SignInPage';
 
 function Header() {
+  const navigate = useNavigate();
   const { isAuthenticated, logout, user } = useAuthStore();
   const { open } = useModal();
 
@@ -82,6 +83,7 @@ function Header() {
               {isAuthenticated && (
                 <div
                   className="w-12 h-12 rounded-full bg-cover bg-center"
+                  onClick={() => navigate('/my-page')}
                   style={{
                     backgroundImage: `url(${profile?.profile_image_url})`,
                   }}

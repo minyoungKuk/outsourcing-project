@@ -4,8 +4,8 @@ import HomePage from '../page/homePage/HomePage';
 import ListPage from '../page/listPage/ListPage.jsx';
 import MyLikePage from '../page/myPage/MyLikePage';
 import MyListPage from '../page/myPage/MyListPage';
-import MyPage from '../page/myPage/MyPageEdit';
 import Detail from '../page/detailPage/Detail';
+import MyEditPage from '../page/myPage/MyEditPage.jsx';
 import WritePage from '../page/writePage';
 
 const Router = createBrowserRouter([
@@ -19,7 +19,7 @@ const Router = createBrowserRouter([
       },
       {
         path: '/my-page',
-        element: <MyPage />,
+        element: <MyEditPage />,
       },
       {
         path: '/my-like-page',
