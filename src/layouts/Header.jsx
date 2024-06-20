@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import defaultImage from '../assets/defaultImage.png';
+import { useQuery } from '@tanstack/react-query';
+import supabase from '../config/supabase';
 import { useModal } from '../context/modal.context';
 import useAuthStore from '../zustand/authStore';
 import SignInPage from './../page/login/SignInPage';
@@ -9,6 +9,7 @@ function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, logout, user } = useAuthStore();
   const { open } = useModal();
+
   const openLogInModal = () => {
     open({
       type: 'login',
@@ -26,13 +27,37 @@ function Header() {
     });
   };
 
-  useEffect(() => {
-    if (user) {
-      console.log('Current user:', user);
-    }
-  }, [user]);
+  const fetchUserProfile = async (userId) => {
+    const { data: userData, error } = await supabase
+      .from('user')
+      .select('*')
+      .eq('id', userId)
+      .single();
 
-  const profileImageUrl = user ? user.profile_image_url : defaultImage;
+    if (error) {
+      throw new Error('Error fetching user profile:', error.message);
+    }
+    return userData;
+  };
+
+  const {
+    data: profile,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ['userProfile', user?.id],
+    queryFn: () => fetchUserProfile(user.id),
+    enabled: !!user,
+    refetchOnWindowFocus: true,
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading user profile</div>;
+  }
 
   return (
     <>
@@ -49,7 +74,7 @@ function Header() {
             </Link>
           </li>
           <li>
-            <Link to="/write" className="pr-5">
+            <Link to="/write-page" className="pr-5">
               글쓰기
             </Link>
           </li>
@@ -58,9 +83,11 @@ function Header() {
               {isAuthenticated && (
                 <div
                   className="w-12 h-12 rounded-full bg-cover bg-center"
-                  style={{ backgroundImage: `url(${profileImageUrl})` }}
-                  alt="profile_image"
                   onClick={() => navigate('/my-page')}
+                  style={{
+                    backgroundImage: `url(${profile?.profile_image_url})`,
+                  }}
+                  alt="/images/logo.png"
                 />
               )}
             </div>

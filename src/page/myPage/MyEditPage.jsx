@@ -1,5 +1,6 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import supabase from '../../config/supabase.js';
 import uploadFile from '../../utils/uploadFile.js';
 
@@ -12,6 +13,7 @@ const MyEditPage = () => {
   const [newNickname, setNewNickname] = useState(user?.nickname ?? '');
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
 
   // 이미지 미리보기 함수
   const saveFileImage = (img) => {
@@ -95,6 +97,7 @@ const MyEditPage = () => {
     }
 
     alert('프로필수정이 완료되었습니다.');
+    queryClient.invalidateQueries(['userProfile']);
   };
   return (
     <>
