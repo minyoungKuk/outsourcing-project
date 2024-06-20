@@ -21,12 +21,16 @@ export const createPostCategory = async (category) => {
 };
 
 // read - 전체 포스트
-export const getAllPosts = async () => {
-  const { data: allData, error } = await supabase.from('POST').select('*');
-  if (error) {
-    throw new Error(error.message);
+export const getAllPosts = async ({ queryKey }) => {
+  if (queryKey[1]){
+    const { data: allData, error } = await supabase.from('POST').select('*').eq("address", queryKey[1]?.address).neq("id", queryKey[1]?.id)
+    if (error) {
+      throw new Error(error.message);
+    }
+    return allData;
   }
-  return allData;
+
+  return []
 };
 
 //특정 id를 가진 글의 정보
@@ -50,7 +54,8 @@ export const getCategories = async ({ queryKey }) => {
   if (error) {
     throw new Error(error.message);
   }
-  return data[0];
+
+  return data[0] ? data[0] : [];
 };
 
 //유저아이디를 이용해 프로필사진 가져오기
@@ -168,7 +173,7 @@ export const existLike = async ({ queryKey }) => {
     throw new Error(error.message);
   }
 
-  return !!likeData;
+  return !!likeData[0];
 };
 
 //좋아요 생성
