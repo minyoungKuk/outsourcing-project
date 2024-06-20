@@ -95,6 +95,8 @@ function WritePage() {
     } else if (map.address === '') {
       alert('리뷰할 장소를 선택해주세요.');
     }
+
+    navigate('/detail');
   };
   console.log(map.address);
   return (

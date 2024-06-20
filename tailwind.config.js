@@ -23,11 +23,15 @@ export default {
       },
       width: {
         600: '600px',
+        854: '854px',
       },
       maxWidth: {
         1080: '1080px',
       },
+      zIndex: {
+        9999: '9999',
+      },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/line-clamp')],
 };

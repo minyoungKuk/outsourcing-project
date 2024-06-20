@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import useKakaoMapStore from '../../zustand/kakaoMap/kakaoMapStore.js';
+import useKakaoMapStore from '../../zustand/kakaoMapStore.js';
 
 const { kakao } = window;
 

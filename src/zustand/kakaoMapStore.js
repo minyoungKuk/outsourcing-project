@@ -12,7 +12,6 @@ const useKakaoMapStore = create(
     },
     setMap: (map) =>
       set((state) => {
-        debugger
         state.map = map;
       }),
   }))

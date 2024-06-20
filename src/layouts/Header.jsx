@@ -1,9 +1,21 @@
 import { Link } from 'react-router-dom';
+import { useModal } from '../context/modal.context';
+import useAuthStore from '../zustand/authStore';
+import SignInPage from './../page/login/SignInPage';
 
 function Header() {
+  const { open } = useModal();
+  const openLogInModal = () => {
+    open({
+      type: 'login',
+      content: <SignInPage />,
+    });
+  };
+  const { isAuthenticated, logout } = useAuthStore();
+
   return (
     <>
-      <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white">
+      <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white z-10">
         <Link to="/" className="flex cursor-pointer items-center">
           <img src="/images/logo.png" alt="GILDONGMU logo" />
           <h1 className="text-xl pl-2"> GILDONGMU </h1>
@@ -29,7 +41,13 @@ function Header() {
               />
             </div>
           </li>
-          <li className="pl-0">로그아웃</li>
+          <li className="pl-0">
+            {isAuthenticated ? (
+              <button onClick={logout}>로그아웃</button>
+            ) : (
+              <button onClick={openLogInModal}>로그인</button>
+            )}
+          </li>
         </ul>
       </header>
     </>
