@@ -3,6 +3,7 @@ import { getMyPostList } from '../../api/supabasePost';
 import PostItem from '../../components/posts/PostItem';
 import useAuthStore from '../../zustand/authStore';
 import MyNotFindSearch from './MyNofindSearch';
+import Spinner from '../../common/components/Spinner.jsx';
 import MypageNavigate from './MypageNavigate';
 
 const MyListPage = () => {
@@ -18,16 +19,13 @@ const MyListPage = () => {
 
   const {
     data: posts,
-    isPending: isPendingPost,
+    isLoading: isLoading,
     error: errorPost,
   } = useQuery({
     queryKey: ['posts', user.id],
     queryFn: getMyPostList,
   });
 
-  if (isPendingPost) {
-    return <div>loading...</div>;
-  }
   if (errorPost) {
     console.log(errorPost);
     return <div></div>;
@@ -40,17 +38,23 @@ const MyListPage = () => {
 
         {posts?.length === 0 ? (
           <MyNotFindSearch />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-            {posts.map((item) => (
-              <PostItem
-                key={item.id}
-                post={item}
-                truncateWithEllipsis={truncateWithEllipsis}
-              />
-            ))}
-          </div>
-        )}
+        ) : (isLoading ? <Spinner/> : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+              {posts?.length > 0 ? (
+                posts.map((item) => (
+                  <PostItem
+                    key={item.id}
+                    post={item}
+                    truncateWithEllipsis={truncateWithEllipsis}
+                  />
+                ))
+              ) : (
+                <div>
+                  {' '}
+                  <MyNotFindSearch />
+                </div>
+              )}
+            </div>))}
       </div>
     </>
   );

@@ -13,6 +13,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import PostItem from '../../components/posts/PostItem.jsx';
 import uploadFile from '../../utils/uploadFile.js';
+import Spinner from '../../common/components/Spinner.jsx';
 
 const Detail = () => {
   const navigate = useNavigate();
@@ -256,13 +257,17 @@ const Detail = () => {
 
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-6">이 곳의 다른 리뷰</h2>
-            <div className="grid grid-cols-3 gap-5 overflow-x-auto">
-              {filteredAddresses?.map((item) => {
-                return <PostItem key={item.id} post={item}
-                                 truncateWithEllipsis={truncateWithEllipsis} />;
-              })
-              }
-            </div>
+
+            {
+              isPendingAllPosts ? <Spinner/> : (
+                <div className="grid grid-cols-3 gap-5 overflow-x-auto">
+                  {filteredAddresses?.map((item) => {
+                    return <PostItem key={item.id} post={item}
+                                     truncateWithEllipsis={truncateWithEllipsis} />;
+                  })
+                  }
+                </div>)
+            }
           </div>
         </>
       )}
