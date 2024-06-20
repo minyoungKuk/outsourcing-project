@@ -43,7 +43,7 @@ const SignInPage = () => {
       await setLogin(email, password);
       modal.open({
         type: 'alert',
-        content: '로그인 성공',
+        content: '로그인이 성공했습니다.',
         onConfirm: () => {
           modal.close();
         },
@@ -113,11 +113,7 @@ const SignInPage = () => {
       >
         회원가입
       </Button>
-      <img
-        src="/images/logo2.png"
-        alt="Logo"
-        className="mt-4 w-24 h-24 mx-auto "
-      />
+      <img src="/images/logo2.png" alt="Logo" className="w-auto h-auto " />
     </form>
   );
 };
