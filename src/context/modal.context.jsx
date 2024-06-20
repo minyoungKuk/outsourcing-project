@@ -18,8 +18,12 @@ export function ModalProvider({ children }) {
       setModalOptions(option);
     },
     close: () => {
+      if (modalOptions?.onClose) {
+        modalOptions.onClose();
+      }
       setModalOptions(null);
     },
+    isOpen: !!modalOptions,
   };
 
   return (

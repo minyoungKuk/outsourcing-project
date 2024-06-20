@@ -1,12 +1,13 @@
 import { createBrowserRouter } from 'react-router-dom';
 import DefaultLayout from '../layouts/DefaultLayout';
+import Detail from '../page/detailPage/Detail';
 import HomePage from '../page/homePage/HomePage';
 import ListPage from '../page/listPage/ListPage.jsx';
+import MyEditPage from '../page/myPage/MyEditPage.jsx';
 import MyLikePage from '../page/myPage/MyLikePage';
 import MyListPage from '../page/myPage/MyListPage';
-import Detail from '../page/detailPage/Detail';
-import MyEditPage from '../page/myPage/MyEditPage.jsx';
 import WritePage from '../page/writePage';
+import PrivateRoute from './PrivateRoute';
 
 const Router = createBrowserRouter([
   {
@@ -19,15 +20,27 @@ const Router = createBrowserRouter([
       },
       {
         path: '/my-page',
-        element: <MyEditPage />,
+        element: (
+          <PrivateRoute>
+            <MyEditPage />
+          </PrivateRoute>
+        ),
       },
       {
         path: '/my-like-page',
-        element: <MyLikePage />,
+        element: (
+          <PrivateRoute>
+            <MyLikePage />
+          </PrivateRoute>
+        ),
       },
       {
         path: '/my-list-page',
-        element: <MyListPage />,
+        element: (
+          <PrivateRoute>
+            <MyListPage />
+          </PrivateRoute>
+        ),
       },
       {
         path: '/list',
@@ -35,7 +48,11 @@ const Router = createBrowserRouter([
       },
       {
         path: '/write-page',
-        element: <WritePage />,
+        element: (
+          <PrivateRoute>
+            <WritePage />
+          </PrivateRoute>
+        ),
       },
     ],
   },
