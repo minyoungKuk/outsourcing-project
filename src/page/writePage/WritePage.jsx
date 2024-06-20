@@ -1,12 +1,14 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createDetail, createPostCategory } from '../../api/supabasePost';
-import KakaoMapWithAddressSearch from '../../components/kakao/KakaoMapWithAddressSearch';
+import KakaoMapWithAddressSearch
+  from '../../components/kakao/KakaoMapWithAddressSearch';
 import { useModal } from '../../context/modal.context';
 import uploadFile from '../../utils/uploadFile';
 import useAuthStore from '../../zustand/authStore';
 import useKakaoMapStore from '../../zustand/kakaoMapStore';
+
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
   { id: 1, data: '#한적한' },
@@ -17,9 +19,10 @@ const TAG_LIST = [
   { id: 6, data: '#자전거' },
   { id: 7, data: '#소풍' },
 ];
+
 function WritePage() {
   const { user } = useAuthStore();
-  const { map } = useKakaoMapStore((state) => state);
+  const { map, setMap } = useKakaoMapStore((state) => state);
   const [checkedList, setCheckedList] = useState([]);
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
@@ -28,6 +31,19 @@ function WritePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const modal = useModal();
+
+  useEffect(() => {
+    return () => {
+      setMap({
+        longitude: 0,
+        latitude: 0,
+        placeName: '',
+        address: '',
+        region: '',
+      });
+    };
+  }, []);
+
   const openModal = (content) => {
     modal.open({
       content: content,
@@ -201,4 +217,5 @@ function WritePage() {
     </div>
   );
 }
+
 export default WritePage;

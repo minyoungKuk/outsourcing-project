@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import PostItem from '../../components/posts/PostItem.jsx';
 import NotFindSearch from '../../components/list/NotFindSearch.jsx';
 import useListStore from '../../zustand/listStore.js';
+import Spinner from '../../common/components/Spinner.jsx';
 
 const ListPage = () => {
   const { keyword: homeKeyword } = useListStore((state) => state);
@@ -30,6 +31,7 @@ const ListPage = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isPending,
   } = useInfiniteQuery({
     queryKey: ['postList', {
       keyword: requestKeyword,
@@ -94,18 +96,21 @@ const ListPage = () => {
                     setCategoryList={setCategoryList} setKeyword={setKeyword} />
       </div>
       {
-        data?.pages[0].data.length !== 0 ?
-          <div className={'grid grid-cols-1 md:grid-cols-3 gap-4 mt-4'}>
-            {data?.pages.map((page) =>
-              page.data.map(post => (
-                <PostItem key={post.id} post={post}
-                          truncateWithEllipsis={truncateWithEllipsis} />
-              )),
-            )}
-          </div> : <NotFindSearch />
+
+        isPending ? <Spinner /> :
+          data?.pages[0].data.length !== 0 ?
+            <div className={'grid grid-cols-1 md:grid-cols-3 gap-4 mt-4'}>
+              {data?.pages.map((page) =>
+                page.data.map(post => (
+                  <PostItem key={post.id} post={post}
+                            truncateWithEllipsis={truncateWithEllipsis} />
+                )),
+              )}
+            </div> : <NotFindSearch />
+
       }
 
-      {isFetchingNextPage && <div>Loading more...</div>}
+      {isFetchingNextPage &&  <Spinner />}
     </div>
   );
 };
