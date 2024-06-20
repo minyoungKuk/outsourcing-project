@@ -37,7 +37,7 @@ const SignUpPage = () => {
     onSuccess: async () => {
       modal.open({
         type: 'alert',
-        content: '회원가입이 완료 되었습니다!!!!!!!!!!!!!',
+        content: '회원가입이 완료 되었습니다.',
         onConfirm: () => {
           modal.close();
         },
@@ -243,11 +243,7 @@ const SignUpPage = () => {
         로그인
       </Button>
 
-      <img
-        src="/images/logo2.png"
-        alt="Logo"
-        className="mt-4 w-24 h-24 mx-auto "
-      />
+      <img src="/images/logo2.png" alt="Logo" className="w-auto h-auto " />
     </form>
   );
 };
