@@ -45,7 +45,7 @@ const MyListPage = () => {
 
   return (
     <>
-      <div className="border border-black border-t-0 border-b-0 mr-40 ml-40 h-auto pb-40">
+      <div className="border border-black border-t-0 border-b-0 mr-40 ml-40 h-auto pb-40 pt-10 px-5">
         <div className="flex">
           <button
             onClick={() => navigate('/my-page')}
