@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import supabase from '../config/supabase';
 
 //전체 포스트 정보
@@ -38,17 +37,15 @@ export const getCategories = async ({ queryKey }) => {
 
 //유저아이디를 이용해 프로필사진 가져오기
 export const getUserProfile = async ({ queryKey }) => {
-  degubber;
-  console.log(queryKey[1]);
   const { data, error } = await supabase
     .from('user')
-    .select('profile_image_url', 'nickname')
-    .eq('id', queryKey[1]);
+    .select('*')
+    .eq('id', queryKey[1])
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
-  console.log(data);
 
   return data;
 };
@@ -76,7 +73,7 @@ export const updateDetail = async (changedPost) => {
 };
 
 // delete
-export const deletePost = async (postId) => {
+export const deleteDetail = async (postId) => {
   const { data, error } = await supabase.from('POST').delete().eq('id', postId);
   if (error) {
     throw new Error(error.message);

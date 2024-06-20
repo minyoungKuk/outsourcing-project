@@ -21,7 +21,7 @@ const Likes = ({ initialLiked }) => {
       setLikeCount(data.likeCount);
     };
 
-    fetchLikeCount();
+    // fetchLikeCount();
   }, [user?.id]);
 
   const mutation = useMutation({
