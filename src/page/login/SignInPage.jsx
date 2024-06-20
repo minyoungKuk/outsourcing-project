@@ -74,7 +74,7 @@ const SignInPage = () => {
         }
         mutate({ email, password });
       }}
-      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg  "
+      className="flex flex-col space-y-4 max-w-md mx-auto p-6 bg-white rounded-lg z-9999  "
     >
       <span className="text-3xl text-center pb-10 font-bold">로그인</span>
       <input
