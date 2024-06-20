@@ -15,7 +15,7 @@ function Header() {
 
   return (
     <>
-      <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white">
+      <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white z-10">
         <Link to="/" className="flex cursor-pointer items-center">
           <img src="/images/logo.png" alt="GILDONGMU logo" />
           <h1 className="text-xl pl-2"> GILDONGMU </h1>
