@@ -1,4 +1,4 @@
-import supabase from '../config/supabase.js';
+import supabase from '../config/supabase';
 
 // create
 export const createDetail = async (post) => {
@@ -20,21 +20,25 @@ export const createPostCategory = async (category) => {
   return data;
 };
 
-// read - 1개 포스트
+// read - 전체 포스트
+export const getAllPosts = async () => {
+  const { data: allData, error } = await supabase.from('POST').select('*');
+  if (error) {
+    throw new Error(error.message);
+  }
+  return allData;
+};
+
+//특정 id를 가진 글의 정보
 export const getDetails = async ({ queryKey }) => {
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('POST')
     .select('*')
     .eq('id', queryKey[1]);
+  if (error) {
+    throw new Error(error.message);
+  }
   return data[0];
-};
-
-// read - 전체 포스트
-export const getAllPosts = async () => {
-  let { data: allData } = await supabase.from('POST').select('*');
-  console.log('alldata ->', allData);
-
-  return allData;
 };
 
 //특정 id를 가진 글 카테고리
@@ -51,16 +55,15 @@ export const getCategories = async ({ queryKey }) => {
 
 //유저아이디를 이용해 프로필사진 가져오기
 export const getUserProfile = async ({ queryKey }) => {
-  console.log(queryKey[1]);
   const { data, error } = await supabase
-  .from('user')
-  .select('profile_image_url', 'nickname')
-  .eq('id', queryKey[1]);
+    .from('user')
+    .select('*')
+    .eq('id', queryKey[1])
+    .single();
 
   if (error) {
     throw new Error(error.message);
   }
-  console.log(data);
 
   return data;
 };
@@ -146,8 +149,7 @@ export const getPostByIdIn = async (postIdList) => {
 
 // delete
 export const deletePost = async (postId) => {
-  const { data, error } = await supabase.from('POST').delete().eq('id',
-    postId);
+  const { data, error } = await supabase.from('POST').delete().eq('id', postId);
   if (error) {
     throw new Error(error.message);
   }
