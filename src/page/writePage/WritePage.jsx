@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { createDetail, createPostCategory } from '../../api/supabasePost';
 import KakaoMapWithAddressSearch from '../../components/kakao/KakaoMapWithAddressSearch';
-import useKakaoMapStore from '../../zustand/kakaoMapStore';
-import supabase from '../../config/supabase';
+import { useModal } from '../../context/modal.context';
 import uploadFile from '../../utils/uploadFile';
-
+import useAuthStore from '../../zustand/authStore';
+import useKakaoMapStore from '../../zustand/kakaoMapStore';
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
   { id: 1, data: '#한적한' },
@@ -16,22 +18,28 @@ const TAG_LIST = [
   { id: 7, data: '#소풍' },
 ];
 function WritePage() {
+  const { user } = useAuthStore();
   const { map } = useKakaoMapStore((state) => state);
   const [checkedList, setCheckedList] = useState([]);
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
   const [imgUrl, setImgUrl] = useState('');
   const inputRef = useRef();
-
   const navigate = useNavigate();
-
+  const queryClient = useQueryClient();
+  const modal = useModal();
+  const openModal = (content) => {
+    modal.open({
+      content: content,
+      type: 'alert',
+    });
+  };
   const imgUpload = (e) => {
     const tempFile = e.target.files[0];
     setFile(tempFile);
     const fileUrl = URL.createObjectURL(tempFile);
     setImgUrl(fileUrl);
   };
-
   const onCheckedTag = (checked, item) => {
     if (checked && checkedList.length === 4) {
       alert('태그는 최대 4개까지 선택할 수 있습니다.');
@@ -41,63 +49,65 @@ function WritePage() {
       setCheckedList(checkedList.filter((element) => element !== item));
     }
   };
-
-  console.log(checkedList);
-
+  const createMutation = useMutation({
+    mutationFn: createDetail,
+    onSuccess: async (data) => {
+      console.log('onSuccess', data);
+      if (!data || data.length === 0) {
+        console.error('데이터가 비어있습니다.');
+        return;
+      }
+      const postId = data.id;
+      console.log(postId);
+      const insertList = checkedList.map((checked) => ({
+        post_id: postId,
+        category_id: checked,
+      }));
+      try {
+        const categoryResponse = await createPostCategory(insertList);
+        console.log('categoryResponse:', categoryResponse);
+        if (categoryResponse) {
+          navigate(`/list`);
+          queryClient.invalidateQueries('allPosts');
+          setContent('');
+          setFile(null);
+          setImgUrl('');
+          setCheckedList([]);
+        } else {
+          console.error('카테고리 응답 오류', categoryResponse);
+        }
+      } catch (error) {
+        console.error('카테고리 생성 오류', error);
+      }
+    },
+    onError: (error) => {
+      console.log('에러', error);
+    },
+  });
   const create = async (e) => {
     e.preventDefault();
     const fileImgUrl = await uploadFile(file, 'post_img');
-    supabase
-      .from('POST')
-      .insert([
-        {
-          user_id: '89895a0e-d365-4995-aa96-d1b2d68d9aa9', //임의의 값
-          content: content,
-          place_name: map.placeName,
-          address: map.address,
-          region: map.region,
-          latitude: map.latitude,
-          longitude: map.longitude,
-          img_url: fileImgUrl,
-        },
-      ])
-      .select()
-      .then((response) => {
-        if (!response.error) {
-          debugger;
-          const postId = response.data[0].id;
-
-          const insertList = checkedList.map((checked) => {
-            return {
-              post_id: postId,
-              category_id: checked,
-            };
-          });
-
-          if (file === null) {
-            alert('사진을 첨부해주세요.');
-          } else if (checkedList.length === 0) {
-            alert('태그를 1개 이상 선택해주세요');
-          } else if (content === '') {
-            alert('게시글을 작성해주세요.');
-          } else if (map.address === '') {
-            alert('리뷰할 장소를 선택해주세요.');
-          } else {
-            supabase
-              .from('POST_CATEGORY')
-              .insert(insertList)
-              .select()
-              .then((response) => {
-                if (!response.error) {
-                  alert('저장되었습니다.');
-                  navigate(`/detail/${response.data[0].post_id}`);
-                }
-              });
-          }
-        }
+    if (!file) {
+      openModal('사진을 첨부해주세요.');
+    } else if (checkedList.length === 0) {
+      openModal('태그를 선택해주세요.');
+    } else if (content === '') {
+      openModal('글을 작성해주세요.');
+    } else if (map.address === '') {
+      openModal('위치를 선택해주세요.');
+    } else {
+      createMutation.mutate({
+        user_id: user.id,
+        content: content,
+        place_name: map.placeName,
+        address: map.address,
+        region: map.region,
+        latitude: map.latitude,
+        longitude: map.longitude,
+        img_url: fileImgUrl,
       });
+    }
   };
-  console.log(map.address);
   return (
     <div className="max-w-1080 mx-auto my-20 px-10 h-auto text-center ">
       <h1 className="text-3xl font-black text-gray-700 text-center mb-12">
