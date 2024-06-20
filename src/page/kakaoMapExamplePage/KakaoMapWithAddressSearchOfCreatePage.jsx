@@ -1,7 +1,9 @@
 import KakaoMapWithAddressSearch
   from '../../components/kakao/KakaoMapWithAddressSearch.jsx';
-import useKakaoMapStore from '../../zustand/kakaoMap/kakaoMapStore.js';
+import useKakaoMapStore from '../../zustand/kakaoMapStore.js';
 import supabase from '../../config/supabase.js';
+import { useQuery } from '@tanstack/react-query';
+import { getPostList } from '../../api/listApi.js';
 
 function KakaoMapWithAddressSearchOfCreatePage() {
 
