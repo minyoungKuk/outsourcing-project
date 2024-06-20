@@ -1,13 +1,20 @@
-import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import supabase from '../../config/supabase';
-import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getMyPostList } from '../../api/supabasePost';
+import PostItem from '../../components/posts/PostItem';
 
 const MyListPage = () => {
-  const [userPosts, setUserPosts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = '89895a0e-d365-4995-aa96-d1b2d68d9aa9';
+  const userId = 'd3616c58-1094-4dee-bf7b-7fcc1d92ab63';
+
+  const truncateWithEllipsis = (text, maxLength) => {
+    if (!text) return '';
+    if (text.length > maxLength) {
+      return text.slice(0, maxLength) + '...';
+    }
+    return text;
+  };
 
   // 현재 경로 확인하여 클래스명 동적 할당
   const getButtonClass = (path) => {
@@ -16,20 +23,19 @@ const MyListPage = () => {
       : 'm-4'; // 기본 스타일
   };
 
-  useEffect(() => {
-    const fetchUserPosts = async () => {
-      const { data, error } = await supabase
-        .from('POST')
-        .select()
-        .eq('user_id', userId);
-      if (error) {
-        console.log(error);
-      } else {
-        setUserPosts(data);
-      }
-    };
-    fetchUserPosts();
-  }, [userId]);
+  const {
+    data: post,
+    isPending: isPendingPost,
+    error: errorPost,
+  } = useQuery({ queryKey: ['post', userId], queryFn: getMyPostList });
+
+  if (isPendingPost) {
+    return <div>loading...</div>;
+  }
+  if (errorPost) {
+    console.log(errorPost);
+    return <div></div>;
+  }
 
   return (
     <>
@@ -54,14 +60,13 @@ const MyListPage = () => {
             좋아요 한 글
           </button>
         </div>
-        <div className="grid grid-cols-4 gap-4 m-4 p-10 ">
-          {userPosts.map((post) => (
-            <div key={post.id} className="border p-4">
-              <Link to={`/detail/${post.id}`} className="font-bold">
-                {post.content}
-                <img src={post.img_url} alt="게시물 이미지"></img>
-              </Link>
-            </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+          {post?.map((item) => (
+            <PostItem
+              key={item.id}
+              post={item}
+              truncateWithEllipsis={truncateWithEllipsis}
+            ></PostItem>
           ))}
         </div>
       </div>

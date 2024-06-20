@@ -12,7 +12,7 @@ const MyPageEdit = () => {
   const [newNickname, setNewNickname] = useState(user?.nickname ?? '');
   const navigate = useNavigate();
   const location = useLocation();
-  const userId = '7bae1395-036a-4799-8788-24b9d0d2dee5';
+  const userId = 'd3616c58-1094-4dee-bf7b-7fcc1d92ab63';
 
   // 이미지 미리보기 함수
   const saveFileImage = (img) => {
@@ -27,9 +27,16 @@ const MyPageEdit = () => {
       ? 'm-4 p-2 border rounded-[7px] font-bold  bg-primary text-white' // 현재 페이지 스타일
       : 'm-4'; // 기본 스타일
   };
-
+  // 유저 정보 가져오기
   useEffect(() => {
     const fetchUser = async () => {
+      const { data: getUserIdData, error: getUserIdError } =
+        await supabase.auth.getSession();
+      console.log(getUserIdData);
+      if (getUserIdError) {
+        console.log(getUserIdError);
+      }
+
       const { data: userData } = await supabase
         .from('user')
         .select()
@@ -84,7 +91,6 @@ const MyPageEdit = () => {
         profile_image_url: profileImageFileName,
       })
       .eq('id', userId);
-    console.log(data);
     if (error) {
       console.error('수정 오류', error);
       return;
@@ -92,8 +98,6 @@ const MyPageEdit = () => {
 
     alert('프로필수정이 완료되었습니다.');
   };
-  // 일단 프로필 수정 끝...
-  //
   return (
     <>
       <div className="border border-black border-t-0 border-b-0 mr-40 ml-40 h-auto pb-40">
@@ -155,7 +159,7 @@ const MyPageEdit = () => {
                 닉네임 수정 :
                 <input
                   type="text"
-                  value={newNickname}
+                  value={newNickname || ''}
                   onChange={(e) => setNewNickname(e.target.value)}
                   className="ml-2 p-1 border border-gray-300 rounded"
                 />

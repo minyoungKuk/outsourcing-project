@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 
 const PostItem = ({ post, truncateWithEllipsis }) => {
   const navigate = useNavigate();
-
   return (
     <div
       key={post.id}
