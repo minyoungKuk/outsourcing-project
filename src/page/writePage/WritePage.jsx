@@ -52,20 +52,17 @@ function WritePage() {
   const createMutation = useMutation({
     mutationFn: createDetail,
     onSuccess: async (data) => {
-      console.log('onSuccess', data);
       if (!data || data.length === 0) {
         console.error('데이터가 비어있습니다.');
         return;
       }
       const postId = data.id;
-      console.log(postId);
       const insertList = checkedList.map((checked) => ({
         post_id: postId,
         category_id: checked,
       }));
       try {
         const categoryResponse = await createPostCategory(insertList);
-        console.log('categoryResponse:', categoryResponse);
         if (categoryResponse) {
           openModal('업로드 되었습니다.');
           navigate(`/list`);
