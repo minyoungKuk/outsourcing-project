@@ -35,7 +35,8 @@ function Header() {
 
   return (
     <>
-      <header className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white z-10">
+      <header
+        className="sticky top-0 w-full bg-primary py-2 px-12 flex align-center items-center justify-between text-white z-10">
         <Link to="/" className="flex cursor-pointer items-center">
           <img src="/images/logo.png" alt="GILDONGMU logo" />
           <h1 className="text-xl pl-2"> GILDONGMU </h1>
@@ -52,24 +53,17 @@ function Header() {
               글쓰기
             </Link>
           </li>
-          <li className="pr-0">
+          <li>
             <div>
-              {isAuthenticated && user ? (
+              {isAuthenticated && (
                 <div
                   className="w-12 h-12 rounded-full bg-cover bg-center"
                   style={{ backgroundImage: `url(${profileImageUrl})` }}
                   alt="/images/logo.png"
-                />
-              ) : (
-                <img
-                  className="w-12 h-12 rounded-full bg-danger"
-                  src="/images/logo.png"
-                  alt="default profile"
-                />
-              )}
+                />)}
             </div>
           </li>
-          <li className="pl-0">
+          <li>
             {isAuthenticated ? (
               <button onClick={handleLogout}>로그아웃</button>
             ) : (
