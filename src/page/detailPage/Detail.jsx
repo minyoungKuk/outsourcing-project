@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import PostInfo from '../../components/PostInfo';
 import KakaoMap from '../../components/kakao/KakaoMap';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import useAuthStore from '../../zustand/authStore';
 import {
-  deletePost,
+  deleteDetail,
   getAllPosts,
   getCategories,
   getDetails,
@@ -20,6 +20,9 @@ const Detail = () => {
   const [content, setContent] = useState('');
   const [imgUrl, setImgUrl] = useState('');
   const { isAuthenticated, user } = useAuthStore();
+  const [isEditable, setIsEditable] = useState(false);
+
+  const textAreaRef = useRef(null);
 
   const {
     data: post,
@@ -34,6 +37,10 @@ const Detail = () => {
     },
   });
 
+  useEffect(() => {
+    setContent(post?.content);
+  }, [post?.content]);
+
   const {
     data: categories,
     isPending: isPendingCategory,
@@ -41,10 +48,10 @@ const Detail = () => {
   } = useQuery({ queryKey: ['category', id], queryFn: getCategories });
 
   const mutationDelete = useMutation({
-    mutationFn: deletePost,
+    mutationFn: deleteDetail,
     onSuccess: () => {
       alert('삭제가 완료되었습니다.');
-      navigate('/');
+      navigate('/list');
     },
   });
 
@@ -74,6 +81,7 @@ const Detail = () => {
         img_url: imgUrl,
       });
     }
+    setIsEditable(false);
     setContent('');
     setImgUrl('');
   };
@@ -110,8 +118,15 @@ const Detail = () => {
     }
   };
 
-  if (isPendingPost) return <p>Loading post...</p>;
-  if (errorPost) return <p>Error loading post: {errorPost.message}</p>;
+  const handleEditClick = () => {
+    setIsEditable(true);
+    setIsEditing(true);
+
+    textAreaRef.current.focus();
+  };
+
+  if (isPendingPost) return <p>로딩중...</p>;
+  if (errorPost) return <p>로딩 실패: {errorPost.message}</p>;
 
   return (
     <div className="p-4 mx-auto max-w-[1080px] mt-10">
@@ -120,60 +135,81 @@ const Detail = () => {
       {post && (
         <>
           <PostInfo post={post} user={user} />
-          <div className="mb-6 grid grid-cols-2 justify-between items-center p-8 gap-4">
-            <p className="items-center bg-primary rounded-lg py-0.5 px-2 text-xs">
-              {categories ? categories.category_id : null}
-            </p>
-            {isAuthenticated && (
-              <div className="text-sm">
-                {isEditing ? (
-                  <div className="mt-6">
-                    <h2 className="text-xl font-bold mb-4">리뷰 수정</h2>
-                    <textarea
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      className="w-full p-2 mb-4 border rounded"
-                    />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="w-full p-2 mb-4 border rounded"
-                    />
-                    {imgUrl && (
-                      <img src={imgUrl} alt="Review" className="w-full mb-4" />
-                    )}
-                    <button
-                      onClick={handleUpdate}
-                      className="px-4 py-2 bg-primary text-white rounded"
-                    >
-                      저장
-                    </button>
-                    <button
-                      onClick={() => setIsEditing(false)}
-                      className="ml-2 px-4 py-2 bg-gray-500 text-white rounded"
-                    >
-                      취소
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <p className="text-lg leading-snug mb-4">{post.content}</p>
-                    <button
-                      onClick={() => setIsEditing(true)}
-                      className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-                    >
-                      수정
-                    </button>
-                    <button
-                      onClick={handleDelete}
-                      className="text-gray-600 hover:text-gray-800 ml-2"
-                    >
-                      삭제
-                    </button>
-                  </>
-                )}
-              </div>
+          <div className="mb-6 items-center align-center p-8 gap-4">
+            <textarea
+              ref={textAreaRef}
+              readOnly={!isEditable}
+              className="text-lg bg-white mt-[-20px] leading-snug mb-5 w-full h-32 focus"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+
+            <div className="flex justify-between align-baseline">
+              <p className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
+                {categories ? categories.category_id : ''}
+              </p>
+            </div>
+
+            {user?.id === post?.user_id && (
+              <>
+                <div className="text-sm">
+                  {isEditing ? (
+                    <div className="mt-3">
+                      <div className="flex justify-between">
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="flex h-[40px] p-2 justify-self-end"
+                        />
+                        <div>
+                          <button
+                            onClick={handleUpdate}
+                            className="px-4 py-2 bg-primary text-white rounded"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setContent(post?.content);
+                              setIsEditing(false);
+                              setIsEditable(false);
+                            }}
+                            className="ml-2 px-4 py-2 bg-gray-500 text-white rounded"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex">
+                        {imgUrl && (
+                          <img
+                            src={imgUrl}
+                            alt="Review"
+                            className="max-w-[30%] max-h-[30%]mb-4"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex mt-3 justify-end">
+                      <button
+                        onClick={handleEditClick}
+                        className="px-4 py-2 bg-primary text-white rounded"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        className="ml-2 px-4 py-2 bg-gray-500 text-white rounded"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
           <div className="mb-10">
@@ -188,10 +224,14 @@ const Detail = () => {
             <h2 className="text-xl font-bold mb-6">이 곳의 다른 리뷰</h2>
             <div className="grid grid-cols-3 gap-5 overflow-x-auto">
               {filteredAddresses?.map((item) => (
-                <Link
-                  to={`/detail/${item.id}`}
+                <div
                   key={item.id}
                   className="relative w-[300px] h-full group"
+                  onClick={() => {
+                    setIsEditing(false);
+                    setIsEditable(false);
+                    navigate(`/detail/${item.id}`);
+                  }}
                 >
                   {item.img_url && (
                     <img
@@ -205,7 +245,7 @@ const Detail = () => {
                       {item.content}
                     </span>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
