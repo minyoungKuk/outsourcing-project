@@ -36,7 +36,9 @@ function KakaoMapWithAddressSearchOfCreatePage() {
       <KakaoMapWithAddressSearch />
 
       {/*등록버튼*/}
-      <button onClick={create}>등록</button>
+      <button onClick={create} className="w-6">
+        등록
+      </button>
     </div>
   );
 }

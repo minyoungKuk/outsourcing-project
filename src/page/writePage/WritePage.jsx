@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { supabase } from '../../config/supabase';
 import KakaoMapWithAddressSearchOfCreatePage from '../kakaoMapExamplePage/KakaoMapWithAddressSearchOfCreatePage';
+import KakaoMapWithAddressSearch from '../../components/kakao/KakaoMapWithAddressSearch';
+import useKakaoMapStore from '../../zustand/kakaoMap/kakaoMapStore';
+import supabase from '../../config/supabase';
+import uploadFile from '../../utils/uploadFile';
 
 const TAG_LIST = [
   { id: 0, data: '#반려동물' },
@@ -14,88 +17,134 @@ const TAG_LIST = [
   { id: 7, data: '#소풍' },
 ];
 function WritePage() {
+  const { map } = useKakaoMapStore((state) => state);
   const [checkedList, setCheckedList] = useState([]);
-  // const handleCheckboxChange = () => {
-  //   // 체크박스가 체크 됐다면
-  //   setIsChecked(!isChecked);
-  //   console.log(isChecked);
-  // };
-  const [review, setReview] = useState();
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getReviews();
-        setReview(data);
-      } catch (error) {
-        console.log('에러 => ', error);
-      }
-    };
-    fetchData();
-  }, []);
+  const [content, setContent] = useState('');
+  const [file, setFile] = useState(null);
+  const [imgUrl, setImgUrl] = useState('');
+  const inputRef = useRef();
+
   const navigate = useNavigate();
+
+  const imgUpload = (e) => {
+    const tempFile = e.target.files[0];
+    setFile(tempFile);
+    const fileUrl = URL.createObjectURL(tempFile);
+    setImgUrl(fileUrl);
+  };
+
   const onCheckedTag = (checked, item) => {
-    if (checked && checkedList.length < 4) {
+    if (checked && checkedList.length === 4) {
+      alert('태그는 최대 4개까지 선택할 수 있습니다.');
+    } else if (checked && checkedList.length < 4) {
       setCheckedList([...checkedList, item]);
     } else if (!checked) {
       setCheckedList(checkedList.filter((element) => element !== item));
     }
   };
+
   console.log(checkedList);
-  const onSubmitBtn = async (e) => {
+
+  const create = async (e) => {
     e.preventDefault();
-    const toInsertData = checkedList.map((item) => {
-      return {
-        post_id: '123123',
-        category_id1: item.id,
-      };
-    });
-    const { data, error } = await supabase
-      .from('POST_CATEGORY')
+    const fileImgUrl = await uploadFile(file, 'post_img');
+    supabase
+      .from('POST')
       .insert([
-        // { post_id: '123123', category_id1: '123123' },
-        // {
-        //   post_id: '123123',
-        //   category_id1: '123123123123123',
-        // },
+        {
+          user_id: '89895a0e-d365-4995-aa96-d1b2d68d9aa9', //임의의 값
+          content: content,
+          place_name: map.placeName,
+          address: map.address,
+          region: map.region,
+          latitude: map.latitude,
+          longitude: map.longitude,
+          img_url: fileImgUrl,
+        },
       ])
-      // .insert(toInsertData)
-      .select();
-    if (error) {
-      console.log('에러 => ', error);
-    }
-    navigate('/detail'); // 임시로 걸어놓음 (클릭 시 작성 완료한 상세페이지로 이동해야 함')
+      .select()
+      .then((response) => {
+        if (!response.error) {
+          debugger;
+          const postId = response.data[0].id;
+
+          const insertList = checkedList.map((checked) => {
+            return {
+              post_id: postId,
+              category_id: checked,
+            };
+          });
+
+          supabase
+            .from('POST_CATEGORY')
+            .insert(insertList)
+            .select()
+            .then((response) => {
+              if (!response.error) {
+                alert('저장되었습니다.');
+              }
+            });
+        }
+      });
   };
+
   return (
-    <div className="max-w-1080 mx-auto my-20 px-10 h-auto text-center bg-slate-100">
+    <div className="max-w-1080 mx-auto my-20 px-10 h-auto text-center ">
       <h1 className="text-3xl font-black text-gray-700 text-center mb-12">
         산책 리뷰 작성
       </h1>
-      <section className="max-w-1080">
-        {/* 검색창 삽입 */}
-        <div className="max-w-1080 bg-slate-400 h-96">
-          <KakaoMapWithAddressSearchOfCreatePage />
-        </div>
+      <section className="max-w-1080 h-full">
+        <KakaoMapWithAddressSearch />
       </section>
       <section>
-        <div className="flex mb-8 mt-16 content-end">
+        <div className="flex mb-4 mt-16 content-end">
           <img
             src="public\images\location-icon.png"
             alt="location-icon"
             className="h-10 mr-3"
           />
           <h2 className="text-2xl font-black text-gray-700 mr-3">
-            지도에서 선택한 장소이름
+            {map.placeName}
           </h2>
           <span className="text-sm text-slate-400 leading-10">
-            경기도 수원시 장안구
+            {map.address}
           </span>
         </div>
         <div>
           <img src="#" alt="" />
         </div>
-        <form>
+        <form onSubmit={create}>
+          <input
+            type="file"
+            className="w-full h-96 mb-8"
+            hidden
+            ref={inputRef}
+            onChange={(e) => imgUpload(e)}
+          />
+          {file ? (
+            <img
+              src={imgUrl}
+              alt=""
+              onClick={() => {
+                inputRef.current.click();
+              }}
+              className="w-full h-96 mb-8 bg-slate-300 cursor-pointer"
+            />
+          ) : (
+            <img
+              // src={imgUrl}
+              src="public\images\img_upload.png"
+              alt=""
+              onClick={() => {
+                inputRef.current.click();
+              }}
+              className="w-full h-96 mb-8 bg-slate-300 cursor-pointer"
+            />
+          )}
           <textarea
             name="content"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
             placeholder="글을 입력해주세요."
             className="w-full h-60 px-4 py-2 border-2"
           />
@@ -127,7 +176,6 @@ function WritePage() {
           <button
             type="submit"
             className="w-72 h-12 text-lg mt-12 bg-sub text-primary font-black border-primary border-2 "
-            onClick={onSubmitBtn}
           >
             완료
           </button>
