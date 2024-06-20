@@ -1,12 +1,12 @@
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getLikePostList } from '../../api/supabasePost';
 import PostItem from '../../components/posts/PostItem';
+import useAuthStore from '../../zustand/authStore';
+import MyNotFindSearch from './MyNofindSearch';
+import MypageNavigate from './MypageNavigate';
 
 const MyLikePage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-
+  const { user } = useAuthStore();
   const truncateWithEllipsis = (text, maxLength) => {
     if (!text) return '';
     if (text.length > maxLength) {
@@ -14,14 +14,16 @@ const MyLikePage = () => {
     }
     return text;
   };
+
   const {
     data: likeList,
     isPending: isPendingPost,
     error: errorPost,
   } = useQuery({
-    queryKey: ['likeList', 'd3616c58-1094-4dee-bf7b-7fcc1d92ab63'],
+    queryKey: ['likeList', user.id],
     queryFn: getLikePostList,
   });
+
   if (isPendingPost) {
     return <div>loading...</div>;
   }
@@ -30,47 +32,24 @@ const MyLikePage = () => {
     return <div></div>;
   }
 
-  // 현재 경로 확인하여 클래스명 동적 할당
-  const getButtonClass = (path) => {
-    return location.pathname === path
-      ? 'm-4 p-2 border rounded-[7px] font-bold bg-primary text-white' // 현재 페이지일 때 스타일
-      : 'm-4'; // 기본 스타일
-  };
-
   return (
     <>
-      <div className="border border-black border-t-0 border-b-0 mr-40 ml-40 h-auto pb-40">
-        <div className="flex">
-          <button
-            onClick={() => navigate('/my-page')}
-            className={getButtonClass('/my-page')}
-          >
-            프로필 수정
-          </button>
-          <button
-            onClick={() => navigate('/my-list-page')}
-            className={getButtonClass('/my-list-page')}
-          >
-            내가 쓴 글
-          </button>
-          <button
-            onClick={() => navigate('/my-like-page')}
-            className={getButtonClass('/my-like-page')}
-          >
-            좋아요 한 글
-          </button>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
-          {likeList.map((post) => {
-            return (
+      <div className="border border-secondary max-w-1080 mx-auto border-t-0 border-b-0 px-10 h-auto pb-40">
+        <MypageNavigate />
+
+        {likeList.length === 0 ? (
+          <MyNotFindSearch />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+            {likeList.map((post) => (
               <PostItem
                 key={post.id}
                 post={post}
                 truncateWithEllipsis={truncateWithEllipsis}
-              ></PostItem>
-            );
-          })}
-        </div>
+              />
+            ))}
+          </div>
+        )}
       </div>
     </>
   );
