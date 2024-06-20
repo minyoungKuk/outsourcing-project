@@ -3,9 +3,10 @@ import PostInfo from '../../components/PostInfo';
 import KakaoMap from '../../components/kakao/KakaoMap';
 import { useQuery } from '@tanstack/react-query';
 import { getAllPosts, getDetails } from '../../api/detailApi';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const Detail = () => {
+  const { id } = useParams();
   const {
     data: post,
     isPending: isPendingPost,

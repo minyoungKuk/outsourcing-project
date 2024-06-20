@@ -73,7 +73,7 @@ function Header() {
             </Link>
           </li>
           <li>
-            <Link to="/write" className="pr-5">
+            <Link to="/write-page" className="pr-5">
               글쓰기
             </Link>
           </li>
