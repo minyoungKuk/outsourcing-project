@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import supabase from '../../config/supabase';
 import { Link } from 'react-router-dom';
-import { useQuery } from 'react-query';
 
 const MyListPage = () => {
   const [userPosts, setUserPosts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const userId = '89895a0e-d365-4995-aa96-d1b2d68d9aa9';
-  const { id } = useParams();
 
   // 현재 경로 확인하여 클래스명 동적 할당
   const getButtonClass = (path) => {
@@ -59,7 +57,7 @@ const MyListPage = () => {
         <div className="grid grid-cols-4 gap-4 m-4 p-10 ">
           {userPosts.map((post) => (
             <div key={post.id} className="border p-4">
-              <Link to={`/my-list-page/${post.id}`} className="font-bold">
+              <Link to={`/detail/${post.id}`} className="font-bold">
                 {post.content}
                 <img src={post.img_url} alt="게시물 이미지"></img>
               </Link>
