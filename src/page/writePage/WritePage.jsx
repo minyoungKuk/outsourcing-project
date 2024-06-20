@@ -86,8 +86,17 @@ function WritePage() {
             });
         }
       });
+    if (file === null) {
+      alert('사진을 첨부해주세요.');
+    } else if (checkedList.length === 0) {
+      alert('태그를 1개 이상 선택해주세요');
+    } else if (content === '') {
+      alert('게시글을 작성해주세요.');
+    } else if (map.address === '') {
+      alert('리뷰할 장소를 선택해주세요.');
+    }
   };
-
+  console.log(map.address);
   return (
     <div className="max-w-1080 mx-auto my-20 px-10 h-auto text-center ">
       <h1 className="text-3xl font-black text-gray-700 text-center mb-12">
@@ -132,7 +141,6 @@ function WritePage() {
             />
           ) : (
             <img
-              // src={imgUrl}
               src="public\images\img_upload.png"
               alt=""
               onClick={() => {
