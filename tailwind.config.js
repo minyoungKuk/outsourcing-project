@@ -27,6 +27,9 @@ export default {
       maxWidth: {
         1080: '1080px',
       },
+      zIndex: {
+        9999: '9999',
+      },
     },
   },
   plugins: [require('@tailwindcss/line-clamp')],
