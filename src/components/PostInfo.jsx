@@ -27,13 +27,13 @@ const PostInfo = ({ post, user }) => {
       </div>
 
       <div className="mx-auto mb-6 border-none flex justify-center">
-        <img src={post?.img_url} alt="review-pics" />
+        <img src={post?.imgUrl} alt="review-pics" />
       </div>
 
       <div className="text-base flex items-center justify-between p-4">
         <div className="text-base flex items-center">
           <img
-            src={data?.profile_image_url}
+            src={data?.profile_imageUrl}
             alt="User"
             className="w-10 h-10 rounded-full mr-4"
           />

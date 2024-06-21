@@ -37,7 +37,7 @@ const Detail = () => {
     queryFn: getDetails,
     onSuccess: (data) => {
       setContent(data?.content || '');
-      setImgUrl(data?.img_url || '');
+      setImgUrl(data?.imgUrl || '');
     },
   });
 
@@ -45,7 +45,7 @@ const Detail = () => {
     return () => {
       setIsEditing(false);
       setIsEditable(false);
-    }
+    };
   }, []);
 
   const truncateWithEllipsis = (text, maxLength) => {
@@ -96,18 +96,17 @@ const Detail = () => {
 
   const handleUpdate = async () => {
     if (post) {
-
-      let updateImageUrl = ""
-      if (imageFile){
-        updateImageUrl =  await uploadFile(imageFile, "post_img");
+      let updateImageUrl = '';
+      if (imageFile) {
+        updateImageUrl = await uploadFile(imageFile, 'post_img');
       } else {
-        updateImageUrl = post.img_url;
+        updateImageUrl = post.imgUrl;
       }
 
       updateMutation.mutate({
         id: post.id,
         content,
-        img_url: updateImageUrl,
+        imgUrl: updateImageUrl,
       });
     }
     setIsEditable(false);
@@ -179,8 +178,7 @@ const Detail = () => {
             />
 
             <div className="flex justify-between align-baseline">
-              <p
-                className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
+              <p className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
                 {categories ? categories.category_id : ''}
               </p>
             </div>
@@ -258,16 +256,21 @@ const Detail = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold mb-6">이 곳의 다른 리뷰</h2>
 
-            {
-              isPendingAllPosts ? <Spinner/> : (
-                <div className="grid grid-cols-3 gap-5 overflow-x-auto">
-                  {filteredAddresses?.map((item) => {
-                    return <PostItem key={item.id} post={item}
-                                     truncateWithEllipsis={truncateWithEllipsis} />;
-                  })
-                  }
-                </div>)
-            }
+            {isPendingAllPosts ? (
+              <Spinner />
+            ) : (
+              <div className="grid grid-cols-3 gap-5 overflow-x-auto">
+                {filteredAddresses?.map((item) => {
+                  return (
+                    <PostItem
+                      key={item.id}
+                      post={item}
+                      truncateWithEllipsis={truncateWithEllipsis}
+                    />
+                  );
+                })}
+              </div>
+            )}
           </div>
         </>
       )}
