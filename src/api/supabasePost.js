@@ -86,8 +86,7 @@ export const getCategories = async ({ queryKey }) => {
   if (error) {
     throw new Error(error.message);
   }
-
-  return data[0] ? data[0] : [];
+  return data ? data : [];
 };
 
 //유저아이디를 이용해 프로필사진 가져오기

@@ -177,10 +177,17 @@ const Detail = () => {
               onChange={(e) => setContent(e.target.value)}
             />
 
-            <div className="flex justify-between align-baseline">
-              <p className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs">
-                {categories ? categories.category_id : ''}
-              </p>
+            <div className="flex justify-items-start gap-2">
+              {categories?.map((category) => {
+                return (
+                  <p
+                    key={category.category_id}
+                    className="max-h-7 bg-primary text-white rounded-lg py-0.5 px-2 text-xs"
+                  >
+                    {category.category_id}
+                  </p>
+                );
+              })}
             </div>
 
             {user?.id === post?.user_id && (
