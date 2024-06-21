@@ -106,13 +106,14 @@ const Detail = () => {
       updateMutation.mutate({
         id: post.id,
         content,
-        imgUrl: updateImageUrl,
+        img_url: updateImageUrl,
       });
     }
     setIsEditable(false);
     setContent('');
     setImgUrl('');
   };
+
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     setImageFile(file);
