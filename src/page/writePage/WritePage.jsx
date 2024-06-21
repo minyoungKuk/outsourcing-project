@@ -133,7 +133,7 @@ function WritePage() {
       <section>
         <div className="flex mb-4 mt-16 content-end">
           <img
-            src="public\images\location-icon.png"
+            src="/images/location-icon.png"
             alt="location-icon"
             className="h-10 mr-3"
           />
@@ -166,7 +166,7 @@ function WritePage() {
             />
           ) : (
             <img
-              src="public\images\img_upload.png"
+              src="/images/img_upload.png"
               alt=""
               onClick={() => {
                 inputRef.current.click();

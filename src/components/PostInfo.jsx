@@ -18,7 +18,7 @@ const PostInfo = ({ post, user }) => {
     <>
       <div className="flex justify-center items-end mb-6 gap-3">
         <div className="flex gap-5">
-          <img className="w-5" src="/public/images/pointer.png" alt="pin-img" />
+          <img className="w-5" src="/images/pointer.png" alt="pin-img" />
           {!post?.placeName || (
             <h1 className="text-2xl font-bold">{post?.placeName}</h1>
           )}
