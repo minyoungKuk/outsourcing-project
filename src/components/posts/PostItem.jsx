@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 
 const PostItem = ({ post, truncateWithEllipsis }) => {
-  debugger;
   const navigate = useNavigate();
   return (
     <div
