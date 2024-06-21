@@ -11,9 +11,6 @@ export const getPostList = async ({ pageParam = 0, queryKey }) => {
     requestoffset: pageParam * limit,
   });
 
-  // 쿼리 상태 확인
-  console.log("Query:", query);
-
   // 쿼리 실행 및 데이터 처리
   const { data, error } = await query;
 
