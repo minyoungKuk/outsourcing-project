@@ -45,7 +45,6 @@ export const register = async ({
       return { error: dbError.message };
     }
 
-    console.log('Database Insert Data:', insertData);
     return { data: insertData };
   } catch (error) {
     console.error('회원가입 에러:', error);

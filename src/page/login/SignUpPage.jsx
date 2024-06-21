@@ -102,8 +102,6 @@ const SignUpPage = () => {
       return;
     }
 
-    // console.log('회원가입 api 응답 :', showErrors);
-
     mutate({
       email: email,
       password: password,
