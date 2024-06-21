@@ -12,7 +12,7 @@ const useAuthStore = create(
           email,
           password,
         });
-        console.log('🚀 ~ login: ~ data:', data);
+
         if (!error) {
           const { data: userData } = await supabase
             .from('user')
