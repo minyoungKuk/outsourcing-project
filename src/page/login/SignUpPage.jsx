@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { register } from '../../api/supabaseAuth';
 import Button from '../../common/components/Button';
 import { useModal } from '../../context/modal.context';
@@ -55,7 +55,7 @@ const SignUpPage = () => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(URL.createObjectURL(file));
-      const url = await uploadFile(file, 'profile_image'); // 'your-bucket-name'을 실제 버킷 이름으로 교체
+      const url = await uploadFile(file, 'profile_image');
       if (url) {
         setProfileImageUrl(url);
       } else {
@@ -102,7 +102,7 @@ const SignUpPage = () => {
       return;
     }
 
-    console.log('회원가입 api 응답 :', showErrors);
+    // console.log('회원가입 api 응답 :', showErrors);
 
     mutate({
       email: email,

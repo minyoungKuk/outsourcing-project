@@ -6,13 +6,6 @@ export const register = async ({
   nickname,
   profile_image_url,
 }) => {
-  console.log('🚀 ~ register parameters:', {
-    email,
-    password,
-    nickname,
-    profile_image_url,
-  });
-
   try {
     const { data, error } = await supabase.auth.signUp({
       email: email,
@@ -41,7 +34,7 @@ export const register = async ({
         {
           id: user.id,
           email: email,
-          password: password,
+          // password: password,
           nickname: nickname,
           profile_image_url: profile_image_url,
         },
