@@ -70,7 +70,7 @@ export const getDetails = async ({ queryKey }) => {
     imgUrl: data[0].img_url,
     latitude: data[0].latitude,
     like_cnt: data[0].like_cnt,
-    longtitude: data[0].longtitude,
+    longitude: data[0].longitude,
     placeName: data[0].place_name,
     region: data[0].region,
     user_id: data[0].user_id,

@@ -33,7 +33,7 @@ const PostInfo = ({ post, user }) => {
       <div className="text-base flex items-center justify-between p-4">
         <div className="text-base flex items-center">
           <img
-            src={data?.profile_imageUrl}
+            src={data?.profile_image_url}
             alt="User"
             className="w-10 h-10 rounded-full mr-4"
           />
