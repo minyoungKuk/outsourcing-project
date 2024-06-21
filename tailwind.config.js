@@ -24,6 +24,7 @@ export default {
       width: {
         600: '600px',
         854: '854px',
+        320: '320px',
       },
       maxWidth: {
         1080: '1080px',
