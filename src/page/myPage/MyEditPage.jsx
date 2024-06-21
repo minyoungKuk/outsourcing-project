@@ -126,7 +126,7 @@ const MyEditPage = () => {
               <img
                 src={imgSrc} //삼항연산자 축약   (~가 있으면 ?? ~를 보여줘라) 이유 : 중복되는 것이 있으니까
                 alt="미리보기"
-                className={` mb-8 w-34 h-34 object-cover rounded-full `}
+                className={` mb-8 w-24 h-24 object-cover rounded-full `}
               />
               <label
                 htmlFor="profile_image"
@@ -134,6 +134,7 @@ const MyEditPage = () => {
               >
                 프로필 추가하기
               </label>
+
               <input
                 id="profile_image"
                 type="file"
