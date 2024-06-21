@@ -61,7 +61,7 @@ export const getDetails = async ({ queryKey }) => {
   if (error) {
     throw new Error(error.message);
   }
-  console.log(data[0]);
+
   return {
     address: data[0].address,
     content: data[0].content,
@@ -136,8 +136,6 @@ export const getMyPostList = async ({ queryKey }) => {
     .select('*')
     .eq('user_id', userId);
 
-  console.log(userId);
-
   //여기다가 로직 작성하기
   return data.map((post) => {
     return {
@@ -152,9 +150,7 @@ export const getMyPostList = async ({ queryKey }) => {
 
 // 좋아요 글 불러오기
 export const getLikePostList = async ({ queryKey }) => {
-  console.log(queryKey[1]);
-
-  let { data: POST_LIKE, error } = await supabase
+  const { data: POST_LIKE, error } = await supabase
     .from('POST_LIKE')
     .select('*')
     .eq('user_id', queryKey[1]);
@@ -162,7 +158,7 @@ export const getLikePostList = async ({ queryKey }) => {
     return post.post_id;
   });
   const postList = await getPostByIdIn(postIdList);
-  console.log(postList);
+
   return postList.map((post) => {
     return {
       id: post.id,
